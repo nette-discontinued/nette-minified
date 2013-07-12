@@ -1,0 +1,40 @@
+{
+	"name": "nette/nette-minified",
+	"type": "library",
+	"description": "Minified version of Nette Framework.",
+	"homepage": "http://nette.org",
+	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"authors": [
+		{
+			"name": "David Grudl",
+			"homepage": "http://davidgrudl.com"
+		},
+		{
+			"name": "Nette Community",
+			"homepage": "http://nette.org/contributors"
+		}
+	],
+	"require": {
+		"php": ">=5.3.0",
+		"ext-iconv": "*",
+		"ext-tokenizer": "*"
+	},
+	"suggest": {
+		"ext-mbstring": "*",
+		"ext-pdo": "*",
+		"ext-memcache": "*",
+		"ext-gd": "*",
+		"ext-fileinfo": "*"
+	},
+	"replace": {
+		"nette/nette": "self.version"
+	},
+	"autoload": {
+		"files": ["nette.min.php"]
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "2.1-dev"
+		}
+	}
+}
