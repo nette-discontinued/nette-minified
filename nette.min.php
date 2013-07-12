@@ -1,7 +1,7 @@
 <?php //netteloader=Nette\Framework
 
 namespace {/**
- * Nette Framework (version 2.0.10 released on 2013-03-08, http://nette.org)
+ * Nette Framework (version 2.0.11 released on 2013-07-11, http://nette.org)
  *
  * Copyright (c) 2004, 2013 David Grudl (http://davidgrudl.com)
  *
@@ -9,7 +9,7 @@ namespace {/**
  * the file license.txt that was distributed with this source code.
  */
 
-error_reporting(E_ALL|E_STRICT);@set_magic_quotes_runtime(FALSE);iconv_set_encoding('internal_encoding','UTF-8');extension_loaded('mbstring')&&mb_internal_encoding('UTF-8');umask(0);@header('X-Powered-By: Nette Framework');@header('Content-Type: text/html; charset=utf-8');define('NETTE',TRUE);define('NETTE_DIR',__DIR__);define('NETTE_VERSION_ID',20010);define('NETTE_PACKAGE','5.3');}namespace Nette\Diagnostics{use
+error_reporting(E_ALL|E_STRICT);@set_magic_quotes_runtime(FALSE);iconv_set_encoding('internal_encoding','UTF-8');extension_loaded('mbstring')&&mb_internal_encoding('UTF-8');umask(0);@header('X-Powered-By: Nette Framework');@header('Content-Type: text/html; charset=utf-8');define('NETTE',TRUE);define('NETTE_DIR',__DIR__);define('NETTE_VERSION_ID',20011);define('NETTE_PACKAGE','5.3');}namespace Nette\Diagnostics{use
 Nette;interface
 IBarPanel{function
 getTab();function
@@ -313,7 +313,7 @@ extends
 Nette\Object
 implements\ArrayAccess,\Countable,\IteratorAggregate{private$name;private$isEmpty;public$attrs=array();protected$children=array();public
 static$xhtml=TRUE;public
-static$emptyElements=array('img'=>1,'hr'=>1,'br'=>1,'input'=>1,'meta'=>1,'area'=>1,'embed'=>1,'keygen'=>1,'source'=>1,'base'=>1,'col'=>1,'link'=>1,'param'=>1,'basefont'=>1,'frame'=>1,'isindex'=>1,'wbr'=>1,'command'=>1);static
+static$emptyElements=array('img'=>1,'hr'=>1,'br'=>1,'input'=>1,'meta'=>1,'area'=>1,'embed'=>1,'keygen'=>1,'source'=>1,'base'=>1,'col'=>1,'link'=>1,'param'=>1,'basefont'=>1,'frame'=>1,'isindex'=>1,'wbr'=>1,'command'=>1,'track'=>1);static
 function
 el($name=NULL,$attrs=NULL){$el=new
 static;$parts=explode(' ',$name,2);$el->setName($parts[0]);if(is_array($attrs)){$el->attrs=$attrs;}elseif($attrs!==NULL){$el->setText($attrs);}if(isset($parts[1])){foreach(Strings::matchAll($parts[1].' ','#([a-z0-9:-]+)(?:=(["\'])?(.*?)(?(2)\\2|\s))?#i')as$m){$el->attrs[$m[1]]=isset($m[3])?$m[3]:TRUE;}}return$el;}final
@@ -392,8 +392,8 @@ endTag(){return$this->name&&!$this->isEmpty?'</'.$this->name.'>':'';}final
 function
 attributes(){if(!is_array($this->attrs)){return'';}$s='';foreach($this->attrs
 as$key=>$value){if($value===NULL||$value===FALSE){continue;}elseif($value===TRUE){if(static::$xhtml){$s.=' '.$key.'="'.$key.'"';}else{$s.=' '.$key;}continue;}elseif(is_array($value)){if($key==='data'){foreach($value
-as$k=>$v){if($v!==NULL&&$v!==FALSE){$s.=' data-'.$k.'="'.htmlspecialchars((string)$v).'"';}}continue;}$tmp=NULL;foreach($value
-as$k=>$v){if($v!=NULL){$tmp[]=$v===TRUE?$k:(is_string($k)?$k.':'.$v:$v);}}if($tmp===NULL){continue;}$value=implode($key==='style'||!strncmp($key,'on',2)?';':' ',$tmp);}else{$value=(string)$value;}$s.=' '.$key.'="'.htmlspecialchars($value).'"';}$s=str_replace('@','&#64;',$s);return$s;}function
+as$k=>$v){if($v!==NULL&&$v!==FALSE){$q=strpos($v,'"')===FALSE?'"':"'";$s.=' data-'.$k.'='.$q.str_replace(array('&',$q),array('&amp;',$q==='"'?'&quot;':'&#39;'),$v).$q;}}continue;}$tmp=NULL;foreach($value
+as$k=>$v){if($v!=NULL){$tmp[]=$v===TRUE?$k:(is_string($k)?$k.':'.$v:$v);}}if($tmp===NULL){continue;}$value=implode($key==='style'||!strncmp($key,'on',2)?';':' ',$tmp);}else{$value=(string)$value;}$q=strpos($value,'"')===FALSE?'"':"'";$s.=' '.$key.'='.$q.str_replace(array('&',$q),array('&amp;',$q==='"'?'&quot;':'&#39;'),$value).$q;}$s=str_replace('@','&#64;',$s);return$s;}function
 __clone(){foreach($this->children
 as$key=>$value){if(is_object($value)){$this->children[$key]=clone$value;}}}}}namespace Nette\Diagnostics{use
 Nette;final
@@ -462,13 +462,13 @@ new
 Nette\InvalidStateException('Logging directory is not specified in Nette\Diagnostics\Debugger::$logDirectory.');}if($message
 instanceof\Exception){$exception=$message;$message=($message
 instanceof
-Nette\FatalErrorException?'Fatal error: '.$exception->getMessage():get_class($exception).": ".$exception->getMessage())." in ".$exception->getFile().":".$exception->getLine();$hash=md5($exception);$exceptionFilename="exception-".@date('Y-m-d-H-i-s')."-$hash.html";foreach(new\DirectoryIterator(self::$logDirectory)as$entry){if(strpos($entry,$hash)){$exceptionFilename=$entry;$saved=TRUE;break;}}}self::$logger->log(array(@date('[Y-m-d H-i-s]'),trim($message),self::$source?' @  '.self::$source:NULL,!empty($exceptionFilename)?' @@  '.$exceptionFilename:NULL),$priority);if(!empty($exceptionFilename)){$exceptionFilename=self::$logDirectory.'/'.$exceptionFilename;if(empty($saved)&&$logHandle=@fopen($exceptionFilename,'w')){ob_start();ob_start(function($buffer)use($logHandle){fwrite($logHandle,$buffer);},4096);self::$blueScreen->render($exception);ob_end_flush();ob_end_clean();fclose($logHandle);}return
+Nette\FatalErrorException?'Fatal error: '.$exception->getMessage():get_class($exception).": ".$exception->getMessage())." in ".$exception->getFile().":".$exception->getLine();$hash=md5(preg_replace('~(Resource id #)\d+~','$1',$exception));$exceptionFilename="exception-".@date('Y-m-d-H-i-s')."-$hash.html";foreach(new\DirectoryIterator(self::$logDirectory)as$entry){if(strpos($entry,$hash)){$exceptionFilename=$entry;$saved=TRUE;break;}}}self::$logger->log(array(@date('[Y-m-d H-i-s]'),trim($message),self::$source?' @  '.self::$source:NULL,!empty($exceptionFilename)?' @@  '.$exceptionFilename:NULL),$priority);if(!empty($exceptionFilename)){$exceptionFilename=self::$logDirectory.'/'.$exceptionFilename;if(empty($saved)&&$logHandle=@fopen($exceptionFilename,'w')){ob_start();ob_start(function($buffer)use($logHandle){fwrite($logHandle,$buffer);},4096);self::$blueScreen->render($exception);ob_end_flush();ob_end_clean();fclose($logHandle);}return
 strtr($exceptionFilename,'\\/',DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR);}}static
 function
 _shutdownHandler(){if(!self::$enabled){return;}static$types=array(E_ERROR=>1,E_CORE_ERROR=>1,E_COMPILE_ERROR=>1,E_PARSE=>1);$error=error_get_last();if(isset($types[$error['type']])){self::_exceptionHandler(new
 Nette\FatalErrorException($error['message'],0,$error['type'],$error['file'],$error['line'],NULL));}if(self::$bar&&!self::$productionMode&&self::isHtmlMode()){self::$bar->render();}}static
 function
-_exceptionHandler(\Exception$exception){if(!headers_sent()){$protocol=isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:'HTTP/1.1';header($protocol.' 500',TRUE,500);}try{if(self::$productionMode){try{self::log($exception,self::ERROR);}catch(\Exception$e){echo'FATAL ERROR: unable to log error';}if(self::$consoleMode){echo"ERROR: the server encountered an internal error and was unable to complete your request.\n";}elseif(self::isHtmlMode()){?>
+_exceptionHandler(\Exception$exception){if(!headers_sent()){$protocol=isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:'HTTP/1.1';$code=isset($_SERVER['HTTP_USER_AGENT'])&&strpos($_SERVER['HTTP_USER_AGENT'],'MSIE ')!==FALSE?503:500;header("$protocol $code",TRUE,$code);}try{if(self::$productionMode){try{self::log($exception,self::ERROR);}catch(\Exception$e){echo'FATAL ERROR: unable to log error';}if(self::$consoleMode){echo"ERROR: the server encountered an internal error and was unable to complete your request.\n";}elseif(self::isHtmlMode()){?>
 <!DOCTYPE html>
 <meta charset="utf-8">
 <meta name=robots content=noindex>
@@ -564,12 +564,13 @@ $ex=$exception;echo
 htmlspecialchars($ex->getMessage().($ex->getCode()?' #'.$ex->getCode():''));while((method_exists($ex,'getPrevious')&&$ex=$ex->getPrevious())||(isset($ex->previous)&&$ex=$ex->previous))echo
 htmlspecialchars('; caused by '.get_class($ex).' '.$ex->getMessage().($ex->getCode()?' #'.$ex->getCode():''));?> -->
 
-	<style type="text/css" class="nette">html{overflow-y:scroll}body{margin:0 0 2em;padding:0}#netteBluescreen{font:9pt/1.5 Verdana,sans-serif;background:white;color:#333;position:absolute;left:0;top:0;width:100%;z-index:23178;text-align:left}#netteBluescreen *{font:inherit;color:inherit;background:transparent;border:none;margin:0;padding:0;text-align:inherit;text-indent:0}#netteBluescreen b{font-weight:bold}#netteBluescreen i{font-style:italic}#netteBluescreen a{text-decoration:none;color:#328ADC;padding:2px 4px;margin:-2px -4px}#netteBluescreen a:hover,#netteBluescreen a:active,#netteBluescreen a:focus{color:#085AA3}#netteBluescreen a abbr{font-family:sans-serif;color:#BBB}#netteBluescreenIcon{position:absolute;right:.5em;top:.5em;z-index:23179;text-decoration:none;background:#CD1818;padding:3px}#netteBluescreenError{background:#CD1818;color:white;font:13pt/1.5 Verdana,sans-serif!important;display:block}#netteBluescreenError #netteBsSearch{color:#CD1818;font-size:.7em}#netteBluescreenError:hover #netteBsSearch{color:#ED8383}#netteBluescreen h1{font-size:18pt;font-weight:normal;text-shadow:1px 1px 0 rgba(0,0,0,.4);margin:.7em 0}#netteBluescreen h2{font:14pt/1.5 sans-serif!important;color:#888;margin:.6em 0}#netteBluescreen h3{font:bold 10pt/1.5 Verdana,sans-serif!important;margin:1em 0;padding:0}#netteBluescreen p,#netteBluescreen pre{margin:.8em 0}#netteBluescreen pre,#netteBluescreen code,#netteBluescreen table{font:9pt/1.5 Consolas,monospace!important}#netteBluescreen pre,#netteBluescreen table{background:#FDF5CE;padding:.4em .7em;border:1px dotted silver;overflow:auto}#netteBluescreen pre div{min-width:100%;float:left;_float:none;white-space:pre}#netteBluescreen table pre{padding:0;margin:0;border:none}#netteBluescreen pre .php-array,#netteBluescreen pre .php-object{color:#C22}#netteBluescreen pre .php-string{color:#080}#netteBluescreen pre .php-int,#netteBluescreen pre .php-float,#netteBluescreen pre .php-null,#netteBluescreen pre .php-bool{color:#328ADC}#netteBluescreen pre .php-visibility{font-size:85%;color:#998}#netteBluescreen pre.nette-dump a{color:#333}#netteBluescreen div.panel{padding:1px 25px}#netteBluescreen div.inner{background:#F4F3F1;padding:.1em 1em 1em;border-radius:8px;-moz-border-radius:8px;-webkit-border-radius:8px}#netteBluescreen table{border-collapse:collapse;width:100%}#netteBluescreen .outer{overflow:auto}#netteBluescreen td,#netteBluescreen th{vertical-align:top;text-align:left;padding:2px 6px;border:1px solid #e6dfbf}#netteBluescreen th{font-weight:bold}#netteBluescreen tr>:first-child{width:20%}#netteBluescreen tr:nth-child(2n),#netteBluescreen tr:nth-child(2n) pre{background-color:#F7F0CB}#netteBluescreen ol{margin:1em 0;padding-left:2.5em}#netteBluescreen ul{font:7pt/1.5 Verdana,sans-serif!important;padding:2em 4em;margin:1em 0 0;color:#777;background:#F6F5F3 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFEAAAAjCAMAAADbuxbOAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADBQTFRF/fz24d7Y7Onj5uLd9vPu3drUzMvG09LN39zW8e7o2NbQ3NnT29jS0M7J1tXQAAAApvmsFgAAABB0Uk5T////////////////////AOAjXRkAAAKlSURBVHja7FbbsqQgDAwENEgc//9vN+SCWDtbtXPmZR/Wc6o02mlC58LA9ckFAOszvMV8xNgyUjyXhojfMVKvRL0ZHavxXYy5JrmchMdzou8YlTClxajtK8ZGGpWRoBr1+gFjKfHkJPbizabLgzE3pH7Iu4K980xgFvlrVzMZoVBWhtvouCDdcTDmTgMCJdVxJ9MKO6XxnliM7hxi5lbj2ZVM4l8DqYyKoNLYcfqBB1/LpHYxEcfVG6ZpMDgyFUVWY/Q1sSYPpIdSAKWqLWL0XqWiMWc4hpH0OQOMOAgdycY4N9Sb7wWANQs3rsDSdLAYiuxi5siVfOhBWIrtH0G3kNaF/8Q4kCPE1kMucG/ZMUBUCOgiKJkPuWWTLGVgLGpwns1DraUayCtoBqERyaYtVsm85NActRooezvSLO/sKZP/nq8n4+xcyjNsRu8zW6KWpdb7wjiQd4WrtFZYFiKHENSmWp6xshh96c2RQ+c7Lt+qbijyEjHWUJ/pZsy8MGIUuzNiPySK2Gqoh6ZTRF6ko6q3nVTkaA//itIrDpW6l3SLo8juOmqMXkYknu5FdQxWbhCfKHEGDhxxyTVaXJF3ZjSl3jMksjSOOKmne9pI+mcG5QvaUJhI9HpkmRo2NpCrDJvsktRhRE2MM6F2n7dt4OaMUq8bCctk0+PoMRzL+1l5PZ2eyM/Owr86gf8z/tOM53lom5+nVcFuB+eJVzlXwAYy9TZ9s537tfqcsJWbEU4nBngZo6FfO9T9CdhfBtmk2dLiAy8uS4zwOpMx2HqYbTC+amNeAYTpsP4SIgvWfUBWXxn3CMHW3ffd7k3+YIkx7w0t/CVGvcPejoeOlzOWzeGbawOHqXQGUTMZRcfj4XPCgW9y/fuvVn8zD9P1QHzv80uAAQA0i3Jer7Jr7gAAAABJRU5ErkJggg==') 99% 10px no-repeat;border-top:1px solid #DDD}#netteBluescreen .highlight{background:#CD1818;color:white;font-weight:bold;font-style:normal;display:block;padding:0 .4em;margin:0 -.4em}#netteBluescreen .line{color:#9F9C7F;font-weight:normal;font-style:normal}#netteBluescreen a[href^=editor\:]{color:inherit;border-bottom:1px dotted #C1D2E1}#netteBluescreen .caused{float:right;padding:.3em .6em;background:#df8075;border-radius:0 0 0 8px;white-space:nowrap}#netteBluescreen .caused a{color:white}</style>
+	<style type="text/css" class="nette-debug">html{overflow-y:scroll}body{margin:0 0 2em;padding:0}#netteBluescreen{font:9pt/1.5 Verdana,sans-serif;background:white;color:#333;position:absolute;left:0;top:0;width:100%;text-align:left}#netteBluescreen *{font:inherit;color:inherit;background:transparent;border:none;margin:0;padding:0;text-align:inherit;text-indent:0}#netteBluescreen b{font-weight:bold}#netteBluescreen i{font-style:italic}#netteBluescreen a{text-decoration:none;color:#328ADC;padding:2px 4px;margin:-2px -4px}#netteBluescreen a:hover,#netteBluescreen a:active,#netteBluescreen a:focus{color:#085AA3}#netteBluescreen a abbr{font-family:sans-serif;color:#BBB}#netteBluescreenIcon{position:absolute;right:.5em;top:.5em;z-index:20000;text-decoration:none;background:#CD1818;padding:3px}#netteBluescreenError{background:#CD1818;color:white;font:13pt/1.5 Verdana,sans-serif!important;display:block}#netteBluescreenError #netteBsSearch{color:#CD1818;font-size:.7em}#netteBluescreenError:hover #netteBsSearch{color:#ED8383}#netteBluescreen h1{font-size:18pt;font-weight:normal;text-shadow:1px 1px 0 rgba(0,0,0,.4);margin:.7em 0}#netteBluescreen h2{font:14pt/1.5 sans-serif!important;color:#888;margin:.6em 0}#netteBluescreen h3{font:bold 10pt/1.5 Verdana,sans-serif!important;margin:1em 0;padding:0}#netteBluescreen p,#netteBluescreen pre{margin:.8em 0}#netteBluescreen pre,#netteBluescreen code,#netteBluescreen table{font:9pt/1.5 Consolas,monospace!important}#netteBluescreen pre,#netteBluescreen table{background:#FDF5CE;padding:.4em .7em;border:1px dotted silver;overflow:auto}#netteBluescreen pre div{min-width:100%;float:left;_float:none;white-space:pre}#netteBluescreen table pre{padding:0;margin:0;border:none}#netteBluescreen pre .php-array,#netteBluescreen pre .php-object{color:#C22}#netteBluescreen pre .php-string{color:#080}#netteBluescreen pre .php-int,#netteBluescreen pre .php-float,#netteBluescreen pre .php-null,#netteBluescreen pre .php-bool{color:#328ADC}#netteBluescreen pre .php-visibility{font-size:85%;color:#998}#netteBluescreen pre.nette-dump a{color:#333}#netteBluescreen div.panel{padding:1px 25px}#netteBluescreen div.inner{background:#F4F3F1;padding:.1em 1em 1em;border-radius:8px;-moz-border-radius:8px;-webkit-border-radius:8px}#netteBluescreen table{border-collapse:collapse;width:100%}#netteBluescreen .outer{overflow:auto}#netteBluescreen td,#netteBluescreen th{vertical-align:top;text-align:left;padding:2px 6px;border:1px solid #e6dfbf}#netteBluescreen th{font-weight:bold}#netteBluescreen tr>:first-child{width:20%}#netteBluescreen tr:nth-child(2n),#netteBluescreen tr:nth-child(2n) pre{background-color:#F7F0CB}#netteBluescreen ol{margin:1em 0;padding-left:2.5em}#netteBluescreen ul{font:7pt/1.5 Verdana,sans-serif!important;padding:2em 4em;margin:1em 0 0;color:#777;background:#F6F5F3 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFEAAAAjCAMAAADbuxbOAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADBQTFRF/fz24d7Y7Onj5uLd9vPu3drUzMvG09LN39zW8e7o2NbQ3NnT29jS0M7J1tXQAAAApvmsFgAAABB0Uk5T////////////////////AOAjXRkAAAKlSURBVHja7FbbsqQgDAwENEgc//9vN+SCWDtbtXPmZR/Wc6o02mlC58LA9ckFAOszvMV8xNgyUjyXhojfMVKvRL0ZHavxXYy5JrmchMdzou8YlTClxajtK8ZGGpWRoBr1+gFjKfHkJPbizabLgzE3pH7Iu4K980xgFvlrVzMZoVBWhtvouCDdcTDmTgMCJdVxJ9MKO6XxnliM7hxi5lbj2ZVM4l8DqYyKoNLYcfqBB1/LpHYxEcfVG6ZpMDgyFUVWY/Q1sSYPpIdSAKWqLWL0XqWiMWc4hpH0OQOMOAgdycY4N9Sb7wWANQs3rsDSdLAYiuxi5siVfOhBWIrtH0G3kNaF/8Q4kCPE1kMucG/ZMUBUCOgiKJkPuWWTLGVgLGpwns1DraUayCtoBqERyaYtVsm85NActRooezvSLO/sKZP/nq8n4+xcyjNsRu8zW6KWpdb7wjiQd4WrtFZYFiKHENSmWp6xshh96c2RQ+c7Lt+qbijyEjHWUJ/pZsy8MGIUuzNiPySK2Gqoh6ZTRF6ko6q3nVTkaA//itIrDpW6l3SLo8juOmqMXkYknu5FdQxWbhCfKHEGDhxxyTVaXJF3ZjSl3jMksjSOOKmne9pI+mcG5QvaUJhI9HpkmRo2NpCrDJvsktRhRE2MM6F2n7dt4OaMUq8bCctk0+PoMRzL+1l5PZ2eyM/Owr86gf8z/tOM53lom5+nVcFuB+eJVzlXwAYy9TZ9s537tfqcsJWbEU4nBngZo6FfO9T9CdhfBtmk2dLiAy8uS4zwOpMx2HqYbTC+amNeAYTpsP4SIgvWfUBWXxn3CMHW3ffd7k3+YIkx7w0t/CVGvcPejoeOlzOWzeGbawOHqXQGUTMZRcfj4XPCgW9y/fuvVn8zD9P1QHzv80uAAQA0i3Jer7Jr7gAAAABJRU5ErkJggg==') 99% 10px no-repeat;border-top:1px solid #DDD}#netteBluescreen .highlight{background:#CD1818;color:white;font-weight:bold;font-style:normal;display:block;padding:0 .4em;margin:0 -.4em}#netteBluescreen .line{color:#9F9C7F;font-weight:normal;font-style:normal}#netteBluescreen a[href^=editor\:]{color:inherit;border-bottom:1px dotted #C1D2E1}#netteBluescreen .caused{float:right;padding:.3em .6em;background:#df8075;border-radius:0 0 0 8px;white-space:nowrap}#netteBluescreen .caused a{color:white}</style>
 </head>
 
 
 
 <body>
+<script>document.body.className+=" js";</script>
 <div id="netteBluescreen">
 	<a id="netteBluescreenIcon" href="#" rel="next"><abbr>&#x25bc;</abbr></a
 
@@ -892,10 +893,10 @@ htmlSpecialChars(Nette\Framework::REVISION)?>)</i></li><?php endif?>
 	</div>
 </div>
 
-<script type="text/javascript">/*<![CDATA[*/var bs=document.getElementById("netteBluescreen");document.body.appendChild(bs);document.onkeyup=function(b){b=b||window.event;if(27==b.keyCode&&!b.shiftKey&&!b.altKey&&!b.ctrlKey&&!b.metaKey)bs.onclick({target:document.getElementById("netteBluescreenIcon")})};
-for(var i=0,styles=document.styleSheets;i<styles.length;i++)"nette"!==(styles[i].owningElement||styles[i].ownerNode).className?(styles[i].oldDisabled=styles[i].disabled,styles[i].disabled=!0):styles[i].addRule?styles[i].addRule(".nette-collapsed","display: none"):styles[i].insertRule(".nette-collapsed { display: none }",0);
-bs.onclick=function(b){for(var b=b||window.event,a=b.target||b.srcElement;a&&a.tagName&&"a"!==a.tagName.toLowerCase();)a=a.parentNode;if(!a||!a.rel)return!0;for(var d=a.getElementsByTagName("abbr")[0],c="next"===a.rel?a.nextSibling:document.getElementById(a.rel);1!==c.nodeType;)c=c.nextSibling;b=c.currentStyle?"none"==c.currentStyle.display:"none"==getComputedStyle(c,null).display;try{d.innerHTML=String.fromCharCode(b?9660:9658)}catch(e){}c.style.display=b?"code"===c.tagName.toLowerCase()?"inline":
-"block":"none";if("netteBluescreenIcon"===a.id){a=0;for(d=document.styleSheets;a<d.length;a++)if("nette"!==(d[a].owningElement||d[a].ownerNode).className)d[a].disabled=b?!0:d[a].oldDisabled}return!1};/*]]>*/</script>
+<script type="text/javascript">/*<![CDATA[*/var bs=document.getElementById("netteBluescreen");document.body.appendChild(bs);document.onkeyup=function(b){b=b||window.event;if(27==b.keyCode&&!(b.shiftKey||b.altKey||b.ctrlKey||b.metaKey))bs.onclick({target:document.getElementById("netteBluescreenIcon")})};
+for(var i=0,styles=document.styleSheets;i<styles.length;i++)"nette-debug"!==(styles[i].owningElement||styles[i].ownerNode).className?(styles[i].oldDisabled=styles[i].disabled,styles[i].disabled=!0):styles[i].addRule?styles[i].addRule(".nette-collapsed","display: none"):styles[i].insertRule(".nette-collapsed { display: none }",0);
+bs.onclick=function(b){b=b||window.event;for(var a=b.target||b.srcElement;a&&a.tagName&&"a"!==a.tagName.toLowerCase();)a=a.parentNode;if(!a||!a.rel)return!0;for(var d=a.getElementsByTagName("abbr")[0],c="next"===a.rel?a.nextSibling:document.getElementById(a.rel);1!==c.nodeType;)c=c.nextSibling;b=c.currentStyle?"none"==c.currentStyle.display:"none"==getComputedStyle(c,null).display;try{d.innerHTML=String.fromCharCode(b?9660:9658)}catch(e){}c.style.display=b?"code"===c.tagName.toLowerCase()?"inline":
+"block":"none";if("netteBluescreenIcon"===a.id)for(a=0,d=document.styleSheets;a<d.length;a++)"nette-debug"!==(d[a].owningElement||d[a].ownerNode).className&&(d[a].disabled=b?!0:d[a].oldDisabled);return!1};/*]]>*/</script>
 </body>
 </html>
 <?php }static
@@ -921,33 +922,33 @@ as$id=>$panel){try{$panels[]=array('id'=>preg_replace('#[^a-z0-9]+#i','-',$id),'
 <?php ob_start()?>
 &nbsp;
 
-<style id="nette-debug-style" class="nette">#nette-debug{display:none;position:fixed}body#nette-debug{margin:5px 5px 0;display:block}#nette-debug *{font:inherit;color:inherit;background:transparent;margin:0;padding:0;border:none;text-align:inherit;list-style:inherit;opacity:1;border-radius:0;box-shadow:none}#nette-debug b,#nette-debug strong{font-weight:bold}#nette-debug i,#nette-debug em{font-style:italic}#nette-debug .nette-fixed-coords{position:fixed;_position:absolute;right:0;bottom:0;max-width:100%}#nette-debug a{color:#125EAE;text-decoration:none}#nette-debug .nette-panel a{color:#125EAE;text-decoration:none}#nette-debug a:hover,#nette-debug a:active,#nette-debug a:focus{background-color:#125EAE;color:white}#nette-debug .nette-panel h2,#nette-debug .nette-panel h3,#nette-debug .nette-panel p{margin:.4em 0}#nette-debug .nette-panel table{border-collapse:collapse;background:#FDF5CE}#nette-debug .nette-panel tr:nth-child(2n) td{background:#F7F0CB}#nette-debug .nette-panel td,#nette-debug .nette-panel th{border:1px solid #E6DFBF;padding:2px 5px;vertical-align:top;text-align:left}#nette-debug .nette-panel th{background:#F4F3F1;color:#655E5E;font-size:90%;font-weight:bold}#nette-debug .nette-panel pre,#nette-debug .nette-panel code{font:9pt/1.5 Consolas,monospace}#nette-debug table .nette-right{text-align:right}.nette-hidden,.nette-collapsed{display:none}#nette-debug-bar{font:normal normal 12px/21px Tahoma,sans-serif;color:#333;border:1px solid #c9c9c9;background:#EDEAE0 url('data:image/png;base64,R0lGODlhAQAVALMAAOTh1/Px6eHe1fHv5e/s4vLw6Ofk2u3q4PPw6PPx6PDt5PLw5+Dd1OXi2Ojm3Orn3iH5BAAAAAAALAAAAAABABUAAAQPMISEyhpYkfOcaQAgCEwEADs=') top;position:relative;overflow:auto;min-height:21px;_float:left;min-width:50px;white-space:nowrap;z-index:23181;opacity:.9;border-radius:3px;box-shadow:1px 1px 10px rgba(0,0,0,.15)}#nette-debug-bar:hover{opacity:1}#nette-debug-bar ul{list-style:none none;margin-left:4px}#nette-debug-bar li{float:left}#nette-debug-bar img{vertical-align:middle;position:relative;top:-1px;margin-right:3px}#nette-debug-bar li a{color:#000;display:block;padding:0 4px}#nette-debug-bar li a:hover{color:black;background:#c3c1b8}#nette-debug-bar li .nette-warning{color:#D32B2B;font-weight:bold}#nette-debug-bar li>span{padding:0 4px}#nette-debug-logo{background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC0AAAAPCAYAAABwfkanAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABiFJREFUSMe1VglPlGcQ5i+1xjZNqxREtGq8ahCPWsVGvEDBA1BBRQFBDjkE5BYUzwpovRBUREBEBbl3OVaWPfj2vi82eTrvbFHamLRJ4yYTvm+u95mZZ96PoKAv+LOatXBYZ+Bx6uFy6DGnt1m0EOKwSmQzwmHTgX5B/1W+yM9GYJ02CX6/B/5ZF+w2A4x6FYGTYDVp4PdY2Tbrs5N+mnRa2Km4/wV6rhPzQQj5fDc1mJM5nd0iYdZtQWtrCxobGnDpUiledTynbuvg99mgUMhw924Trl2rR01NNSTNJE9iDpTV8innv4K2kZPLroPXbYLHZeSu2K1aeF0muJ2GvwGzmNSwU2E+svm8ZrgdBliMaha/34Vx+RAKCgpwpa4OdbW1UE/L2cc/68WtWzdRVlaG6uoqtD1/BA/pA1MIxLvtes7pc5vhoDOE/rOgbVSdf9aJWa8dBp0Kyg+jdLiTx2vQKWEyqGmcNkqg4iTC1+dzQatWkK+cJqPD7KyFaKEjvRuNjY24fLkGdXW1ePjwAeX4QHonDNI0A75+/RpqqqshH+6F2UAUMaupYXouykV0mp6SQ60coxgL8Z4aMg/4x675/V60v3jKB+Xl5WJibIC4KPEIS0qKqWv5GOh7BZ/HSIk9kA33o7y8DOfPZ6GQOipkXDZAHXKxr4ipqqpkKS6+iIrycgz2dyMnJxtVlZUsotNZWZmor79KBbvgpdjm5sfIzc1hv4L8fKJPDTfJZZc+gRYKr8sAEy2DcBRdEEk62ltx9uwZ5qNILoDU1l6mbrvx5EkzUlKSuTiR7PHjR3x4fv4FyIbeIic7G5WVFUyN+qtX+Lnt2SPcvn2LfURjhF7kE4WPDr+Bx+NEUVEhkpNPoImm5CSOl5aUIC3tLOMR59gtAY4HidGIzj14cB8ZGRkM8kJeHk6cOI4xWR8vSl5uLlJTT6O74xnT5lB8PM6cSYXVqILb5UBWZiYSExMYkE4zzjqX00QHG+h9AjPqMei0k3ywy2khMdNiq6BVCf04T6ekuBgJCUdRUVHOBQwPvkNSUiLjaGi4Q/5qFgYtHgTXRJdTT59GenoaA5gY64deq0Bc3EGuNj4+DnppEheLijhZRkY6SktLsGPHdi6irOwSFTRAgO04deokTSIFsbExuHfvLnFSx8DevelAfFwcA0lJTqZi5PDS9aci/sbE7Oe4wsICbtD27b/ye1NTI3FeSX4W2gdFALRD3A4eM44ePcKViuD79/8gnZP5Kg4+cCAW2dnnqUM2Lujw4UM4ePAA2ztfPsHIYA/sdOt43A50d7UFCjkUj+joXVBMDJDeDhcVk08cjd61C3v37uFYp8PKXX3X8xJRUTtw7FgSn3Xzxg10d7ZCqRjkM+02C7pettDNogqAFjzxuI3YHR2Nffv2coXy0V44HGZERm7kJNu2/cK8bW9rwbp1axnMnj27uUijQQOb1QyTcYZ3YMOGn/Hbzp1crAAvaDfY38O5hW3//n0ce+TIYWiUcub1xo0R2Lp1y8cYsUMWM125VhPe93Zj7do1vEPi26GfUdBFbhK8tGHrli1YsWwpgoOD0dXRQqAtXMCy8DBs3rwJoSGLsWrVclylBdoUGYlVK1dg9eqVCFsSSs8/4btvvmUwEnE0KTERISE/IiIiAsGLF2HhwgU8qbc97QgPX8qFr1mzGgu+/opzdL5o5l1aEhqC9evXYWlYKFYsD6e/YVj0w/dMGZVyBDMqeaDTRuKpkxYjIz2dOyeup6H3r2kkOuJ1H3N5Z1QUzp3LQF9vJ4xGLQYHXiM9LY0pEhsTg+PHj9HNcJu4OcL3uaQZY86LiZw8mcJTkmhBTUYJbU8fcoygobgWR4Z6iKtTPLE7d35HYkICT1dIZuY59HQ9412StBPQTMvw8Z6WaMNFxy3Gab4TeQT0M9IHwUT/G0i0MGIJ9CTiJjBIH+iQaQbC7+QnfEXiQL6xgF09TjETHCt8RbeMuil+D8RNsV1LHdQoZfR/iJJzCZuYmEE/Bd3MJNs/+0UURgFWJJ//aQ8k+CsxVTqnVytHObkQrUoG8T4/bs4u4ubbxLPwFzYNPc8HI2zijLm84l39Dx8hfwJenFezFBKKQwAAAABJRU5ErkJggg==') 0 50% no-repeat;min-width:45px;cursor:move}#nette-debug-logo span{display:none}#nette-debug-bar-bgl,#nette-debug-bar-bgx,#nette-debug-bar-bgr{position:absolute;z-index:-1;top:-7px;height:37px}#nette-debug .nette-panel{font:normal normal 12px/1.5 sans-serif;background:white;color:#333;text-align:left}#nette-debug h1{font:normal normal 23px/1.4 Tahoma,sans-serif;color:#575753;margin:-5px -5px 5px;padding:0 25px 5px 5px}#nette-debug .nette-mode-peek .nette-inner,#nette-debug .nette-mode-float .nette-inner{max-width:700px;max-height:500px;overflow:auto}#nette-debug .nette-panel .nette-icons{display:none}#nette-debug .nette-mode-peek{display:none;position:relative;z-index:23180;padding:10px;min-width:150px;min-height:50px;border-radius:5px;box-shadow:1px 1px 20px rgba(102,102,102,0.36);border:1px solid rgba(0,0,0,0.1)}#nette-debug .nette-mode-peek h1{cursor:move}#nette-debug .nette-mode-float{position:relative;padding:10px;min-width:150px;min-height:50px;border-radius:5px;opacity:.95;box-shadow:1px 1px 30px rgba(102,102,102,0.36);border:1px solid rgba(0,0,0,0.1)}#nette-debug .nette-focused{opacity:1}#nette-debug .nette-mode-float h1{cursor:move}#nette-debug .nette-mode-float .nette-icons{display:block;position:absolute;top:0;right:5px;font-size:18px}#nette-debug .nette-icons a{color:#575753}#nette-debug .nette-icons a:hover{color:white}pre.nette-dump{color:#444;background:white}pre.nette-dump a,#nette-debug pre.nette-dump a{color:inherit;background:inherit}pre.nette-dump .php-array,pre.nette-dump .php-object,#nette-debug pre.nette-dump .php-array,#nette-debug pre.nette-dump .php-object{color:#C22}pre.nette-dump .php-string,#nette-debug pre.nette-dump .php-string{color:#080}pre.nette-dump .php-int,pre.nette-dump .php-float,#nette-debug pre.nette-dump .php-int,#nette-debug pre.nette-dump .php-float{color:#37D}pre.nette-dump .php-null,pre.nette-dump .php-bool,#nette-debug pre.nette-dump .php-null,#nette-debug pre.nette-dump .php-bool{color:black}pre.nette-dump .php-visibility,#nette-debug pre.nette-dump .php-visibility{font-size:85%;color:#999}@media print{#nette-debug *{display:none}}</style>
+<style id="nette-debug-style" class="nette-debug">#nette-debug{display:none;position:fixed}body#nette-debug{margin:5px 5px 0;display:block}body #nette-debug{position:absolute;bottom:0;right:0}#nette-debug *{font:inherit;color:inherit;background:transparent;margin:0;padding:0;border:none;text-align:inherit;list-style:inherit;opacity:1;border-radius:0;box-shadow:none}#nette-debug b,#nette-debug strong{font-weight:bold}#nette-debug i,#nette-debug em{font-style:italic}#nette-debug .nette-fixed-coords{position:fixed;_position:absolute;right:0;bottom:0;max-width:100%}#nette-debug a{color:#125EAE;text-decoration:none}#nette-debug .nette-panel a{color:#125EAE;text-decoration:none}#nette-debug a:hover,#nette-debug a:active,#nette-debug a:focus{background-color:#125EAE;color:white}#nette-debug .nette-panel h2,#nette-debug .nette-panel h3,#nette-debug .nette-panel p{margin:.4em 0}#nette-debug .nette-panel table{border-collapse:collapse;background:#FDF5CE}#nette-debug .nette-panel tr:nth-child(2n) td{background:#F7F0CB}#nette-debug .nette-panel td,#nette-debug .nette-panel th{border:1px solid #E6DFBF;padding:2px 5px;vertical-align:top;text-align:left}#nette-debug .nette-panel th{background:#F4F3F1;color:#655E5E;font-size:90%;font-weight:bold}#nette-debug .nette-panel pre,#nette-debug .nette-panel code{font:9pt/1.5 Consolas,monospace}#nette-debug table .nette-right{text-align:right}.nette-hidden,.nette-collapsed{display:none}#nette-debug-bar{font:normal normal 12px/21px Tahoma,sans-serif;color:#333;border:1px solid #c9c9c9;background:#EDEAE0 url('data:image/png;base64,R0lGODlhAQAVALMAAOTh1/Px6eHe1fHv5e/s4vLw6Ofk2u3q4PPw6PPx6PDt5PLw5+Dd1OXi2Ojm3Orn3iH5BAAAAAAALAAAAAABABUAAAQPMISEyhpYkfOcaQAgCEwEADs=') top;position:relative;overflow:auto;min-height:21px;_float:left;min-width:50px;white-space:nowrap;z-index:23181;opacity:.9;border-radius:3px;box-shadow:1px 1px 10px rgba(0,0,0,.15)}#nette-debug-bar:hover{opacity:1}#nette-debug-bar ul{list-style:none none;margin-left:4px}#nette-debug-bar li{float:left}#nette-debug-bar img{vertical-align:middle;position:relative;top:-1px;margin-right:3px}#nette-debug-bar li a{color:#000;display:block;padding:0 4px}#nette-debug-bar li a:hover{color:black;background:#c3c1b8}#nette-debug-bar li .nette-warning{color:#D32B2B;font-weight:bold}#nette-debug-bar li>span{padding:0 4px}#nette-debug-logo{background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC0AAAAPCAYAAABwfkanAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABiFJREFUSMe1VglPlGcQ5i+1xjZNqxREtGq8ahCPWsVGvEDBA1BBRQFBDjkE5BYUzwpovRBUREBEBbl3OVaWPfj2vi82eTrvbFHamLRJ4yYTvm+u95mZZ96PoKAv+LOatXBYZ+Bx6uFy6DGnt1m0EOKwSmQzwmHTgX5B/1W+yM9GYJ02CX6/B/5ZF+w2A4x6FYGTYDVp4PdY2Tbrs5N+mnRa2Km4/wV6rhPzQQj5fDc1mJM5nd0iYdZtQWtrCxobGnDpUiledTynbuvg99mgUMhw924Trl2rR01NNSTNJE9iDpTV8innv4K2kZPLroPXbYLHZeSu2K1aeF0muJ2GvwGzmNSwU2E+svm8ZrgdBliMaha/34Vx+RAKCgpwpa4OdbW1UE/L2cc/68WtWzdRVlaG6uoqtD1/BA/pA1MIxLvtes7pc5vhoDOE/rOgbVSdf9aJWa8dBp0Kyg+jdLiTx2vQKWEyqGmcNkqg4iTC1+dzQatWkK+cJqPD7KyFaKEjvRuNjY24fLkGdXW1ePjwAeX4QHonDNI0A75+/RpqqqshH+6F2UAUMaupYXouykV0mp6SQ60coxgL8Z4aMg/4x675/V60v3jKB+Xl5WJibIC4KPEIS0qKqWv5GOh7BZ/HSIk9kA33o7y8DOfPZ6GQOipkXDZAHXKxr4ipqqpkKS6+iIrycgz2dyMnJxtVlZUsotNZWZmor79KBbvgpdjm5sfIzc1hv4L8fKJPDTfJZZc+gRYKr8sAEy2DcBRdEEk62ltx9uwZ5qNILoDU1l6mbrvx5EkzUlKSuTiR7PHjR3x4fv4FyIbeIic7G5WVFUyN+qtX+Lnt2SPcvn2LfURjhF7kE4WPDr+Bx+NEUVEhkpNPoImm5CSOl5aUIC3tLOMR59gtAY4HidGIzj14cB8ZGRkM8kJeHk6cOI4xWR8vSl5uLlJTT6O74xnT5lB8PM6cSYXVqILb5UBWZiYSExMYkE4zzjqX00QHG+h9AjPqMei0k3ywy2khMdNiq6BVCf04T6ekuBgJCUdRUVHOBQwPvkNSUiLjaGi4Q/5qFgYtHgTXRJdTT59GenoaA5gY64deq0Bc3EGuNj4+DnppEheLijhZRkY6SktLsGPHdi6irOwSFTRAgO04deokTSIFsbExuHfvLnFSx8DevelAfFwcA0lJTqZi5PDS9aci/sbE7Oe4wsICbtD27b/ye1NTI3FeSX4W2gdFALRD3A4eM44ePcKViuD79/8gnZP5Kg4+cCAW2dnnqUM2Lujw4UM4ePAA2ztfPsHIYA/sdOt43A50d7UFCjkUj+joXVBMDJDeDhcVk08cjd61C3v37uFYp8PKXX3X8xJRUTtw7FgSn3Xzxg10d7ZCqRjkM+02C7pettDNogqAFjzxuI3YHR2Nffv2coXy0V44HGZERm7kJNu2/cK8bW9rwbp1axnMnj27uUijQQOb1QyTcYZ3YMOGn/Hbzp1crAAvaDfY38O5hW3//n0ce+TIYWiUcub1xo0R2Lp1y8cYsUMWM125VhPe93Zj7do1vEPi26GfUdBFbhK8tGHrli1YsWwpgoOD0dXRQqAtXMCy8DBs3rwJoSGLsWrVclylBdoUGYlVK1dg9eqVCFsSSs8/4btvvmUwEnE0KTERISE/IiIiAsGLF2HhwgU8qbc97QgPX8qFr1mzGgu+/opzdL5o5l1aEhqC9evXYWlYKFYsD6e/YVj0w/dMGZVyBDMqeaDTRuKpkxYjIz2dOyeup6H3r2kkOuJ1H3N5Z1QUzp3LQF9vJ4xGLQYHXiM9LY0pEhsTg+PHj9HNcJu4OcL3uaQZY86LiZw8mcJTkmhBTUYJbU8fcoygobgWR4Z6iKtTPLE7d35HYkICT1dIZuY59HQ9412StBPQTMvw8Z6WaMNFxy3Gab4TeQT0M9IHwUT/G0i0MGIJ9CTiJjBIH+iQaQbC7+QnfEXiQL6xgF09TjETHCt8RbeMuil+D8RNsV1LHdQoZfR/iJJzCZuYmEE/Bd3MJNs/+0UURgFWJJ//aQ8k+CsxVTqnVytHObkQrUoG8T4/bs4u4ubbxLPwFzYNPc8HI2zijLm84l39Dx8hfwJenFezFBKKQwAAAABJRU5ErkJggg==') 0 50% no-repeat;min-width:45px;cursor:move}#nette-debug-logo span{display:none}#nette-debug-bar-bgl,#nette-debug-bar-bgx,#nette-debug-bar-bgr{position:absolute;z-index:-1;top:-7px;height:37px}#nette-debug .nette-panel{font:normal normal 12px/1.5 sans-serif;background:white;color:#333;text-align:left}#nette-debug h1{font:normal normal 23px/1.4 Tahoma,sans-serif;color:#575753;margin:-5px -5px 5px;padding:0 25px 5px 5px}#nette-debug .nette-mode-peek .nette-inner,#nette-debug .nette-mode-float .nette-inner{max-width:700px;max-height:500px;overflow:auto}#nette-debug .nette-panel .nette-icons{display:none}#nette-debug .nette-mode-peek{display:none;position:relative;z-index:23180;padding:10px;min-width:150px;min-height:50px;border-radius:5px;box-shadow:1px 1px 20px rgba(102,102,102,0.36);border:1px solid rgba(0,0,0,0.1)}#nette-debug .nette-mode-peek h1{cursor:move}#nette-debug .nette-mode-float{position:relative;padding:10px;min-width:150px;min-height:50px;border-radius:5px;opacity:.95;box-shadow:1px 1px 30px rgba(102,102,102,0.36);border:1px solid rgba(0,0,0,0.1)}#nette-debug .nette-focused{opacity:1}#nette-debug .nette-mode-float h1{cursor:move}#nette-debug .nette-mode-float .nette-icons{display:block;position:absolute;top:0;right:5px;font-size:18px}#nette-debug .nette-icons a{color:#575753}#nette-debug .nette-icons a:hover{color:white}pre.nette-dump{color:#444;background:white}pre.nette-dump a,#nette-debug pre.nette-dump a{color:inherit;background:inherit}pre.nette-dump .php-array,pre.nette-dump .php-object,#nette-debug pre.nette-dump .php-array,#nette-debug pre.nette-dump .php-object{color:#C22}pre.nette-dump .php-string,#nette-debug pre.nette-dump .php-string{color:#080}pre.nette-dump .php-int,pre.nette-dump .php-float,#nette-debug pre.nette-dump .php-int,#nette-debug pre.nette-dump .php-float{color:#37D}pre.nette-dump .php-null,pre.nette-dump .php-bool,#nette-debug pre.nette-dump .php-null,#nette-debug pre.nette-dump .php-bool{color:black}pre.nette-dump .php-visibility,#nette-debug pre.nette-dump .php-visibility{font-size:85%;color:#999}@media print{#nette-debug *{display:none}}</style>
 
-<!--[if lt IE 8]><style class="nette">#nette-debug-bar img{display:none}#nette-debug-bar li{border-left:1px solid #DCD7C8;padding:0 3px}#nette-debug-logo span{background:#edeae0;display:inline}</style><![endif]-->
+<!--[if lt IE 8]><style class="nette-debug">#nette-debug-bar img{display:none}#nette-debug-bar li{border-left:1px solid #DCD7C8;padding:0 3px}#nette-debug-logo span{background:#edeae0;display:inline}</style><![endif]-->
 
 
 <script id="nette-debug-script">/*<![CDATA[*/var Nette=Nette||{};
 (function(){Nette.Class=function(a){var b=Object.prototype.hasOwnProperty,c,d=b.call(a,"constructor")?a.constructor:function(){};delete a.constructor;if(a.Extends){var f=function(){this.constructor=d};f.prototype=a.Extends.prototype;d.prototype=new f;delete a.Extends}if(a.Static){for(c in a.Static)b.call(a.Static,c)&&(d[c]=a.Static[c]);delete a.Static}for(c in a)b.call(a,c)&&(d.prototype[c]=a[c]);return d};Nette.Q=Nette.Class({Static:{factory:function(a){return new Nette.Q(a)},implement:function(a){var b,
-c=Nette.Q.implement,d=Nette.Q.prototype,f=Object.prototype.hasOwnProperty;for(b in a)f.call(a,b)&&(c[b]=a[b],d[b]=function(a){return function(){return this.each(c[a],arguments)}}(b))}},constructor:function(a){if("string"===typeof a)a=this._find(document,a);else if(!a||a.nodeType||void 0===a.length||a===window)a=[a];for(var b=0,c=a.length;b<c;b++)a[b]&&(this[this.length++]=a[b])},length:0,find:function(a){return new Nette.Q(this._find(this[0],a))},_find:function(a,b){if(!a||!b)return[];if(document.querySelectorAll)return a.querySelectorAll(b);
-if("#"===b.charAt(0))return[document.getElementById(b.substring(1))];var b=b.split("."),c=a.getElementsByTagName(b[0]||"*");if(b[1]){for(var d=[],f=RegExp("(^|\\s)"+b[1]+"(\\s|$)"),e=0,h=c.length;e<h;e++)f.test(c[e].className)&&d.push(c[e]);return d}return c},dom:function(){return this[0]},each:function(a,b){for(var c=0,d;c<this.length;c++)if(void 0!==(d=a.apply(this[c],b||[])))return d;return this}});var i=Nette.Q.factory,e=Nette.Q.implement;e({bind:function(a,b){if(document.addEventListener&&("mouseenter"===
-a||"mouseleave"===a))var c=b,a="mouseenter"===a?"mouseover":"mouseout",b=function(a){for(var b=a.relatedTarget;b;b=b.parentNode)if(b===this)return;c.call(this,a)};var d=e.data.call(this),d=d.events=d.events||{};if(!d[a]){var f=this,g=d[a]=[],h=e.bind.genericHandler=function(a){a.target||(a.target=a.srcElement);a.preventDefault||(a.preventDefault=function(){a.returnValue=!1});a.stopPropagation||(a.stopPropagation=function(){a.cancelBubble=!0});a.stopImmediatePropagation=function(){this.stopPropagation();
+c=Nette.Q.implement,d=Nette.Q.prototype,f=Object.prototype.hasOwnProperty;for(b in a)f.call(a,b)&&(c[b]=a[b],d[b]=function(a){return function(){return this.each(c[a],arguments)}}(b))}},constructor:function(a){if("string"===typeof a)a=this._find(document,a);else if(!a||a.nodeType||void 0===a.length||a===window)a=[a];for(var b=0,c=a.length;b<c;b++)a[b]&&(this[this.length++]=a[b])},length:0,find:function(a){return new Nette.Q(this._find(this[0],a))},_find:function(a,b){if(a&&b){if(document.querySelectorAll)return a.querySelectorAll(b);
+if("#"===b.charAt(0))return[document.getElementById(b.substring(1))];b=b.split(".");var c=a.getElementsByTagName(b[0]||"*");if(b[1]){for(var d=[],f=RegExp("(^|\\s)"+b[1]+"(\\s|$)"),e=0,h=c.length;e<h;e++)f.test(c[e].className)&&d.push(c[e]);return d}return c}return[]},dom:function(){return this[0]},each:function(a,b){for(var c=0,d;c<this.length;c++)if(void 0!==(d=a.apply(this[c],b||[])))return d;return this}});var k=Nette.Q.factory,e=Nette.Q.implement;e({bind:function(a,b){if(document.addEventListener&&
+("mouseenter"===a||"mouseleave"===a)){var c=b;a="mouseenter"===a?"mouseover":"mouseout";b=function(a){for(var b=a.relatedTarget;b;b=b.parentNode)if(b===this)return;c.call(this,a)}}var d=e.data.call(this),d=d.events=d.events||{};if(!d[a]){var f=this,g=d[a]=[],h=e.bind.genericHandler=function(a){a.target||(a.target=a.srcElement);a.preventDefault||(a.preventDefault=function(){a.returnValue=!1});a.stopPropagation||(a.stopPropagation=function(){a.cancelBubble=!0});a.stopImmediatePropagation=function(){this.stopPropagation();
 b=g.length};for(var b=0;b<g.length;b++)g[b].call(f,a)};document.addEventListener?this.addEventListener(a,h,!1):document.attachEvent&&this.attachEvent("on"+a,h)}d[a].push(b)},addClass:function(a){this.className=this.className.replace(/^|\s+|$/g," ").replace(" "+a+" "," ")+" "+a},removeClass:function(a){this.className=this.className.replace(/^|\s+|$/g," ").replace(" "+a+" "," ")},hasClass:function(a){return-1<this.className.replace(/^|\s+|$/g," ").indexOf(" "+a+" ")},show:function(){var a=e.show.display=
-e.show.display||{},b=this.tagName;if(!a[b]){var c=document.body.appendChild(document.createElement(b));a[b]=e.css.call(c,"display")}this.style.display=a[b]},hide:function(){this.style.display="none"},css:function(a){return this.currentStyle?this.currentStyle[a]:window.getComputedStyle?document.defaultView.getComputedStyle(this,null).getPropertyValue(a):void 0},data:function(){return this.nette?this.nette:this.nette={}},val:function(){var a,b,c;if(!this.nodeName){for(a=0,b=this.length;a<b;a++)if(this[a].checked)return this[a].value;
-return null}if("select"===this.nodeName.toLowerCase()){a=this.selectedIndex;var d=this.options;if(0>a)return null;if("select-one"===this.type)return d[a].value;for(a=0,c=[],b=d.length;a<b;a++)d[a].selected&&c.push(d[a].value);return c}return"checkbox"===this.type?this.checked:this.value.replace(/^\s+|\s+$/g,"")},_trav:function(a,b,c){for(b=b.split(".");a&&!(1===a.nodeType&&(!b[0]||a.tagName.toLowerCase()===b[0])&&(!b[1]||e.hasClass.call(a,b[1])));)a=a[c];return i(a)},closest:function(a){return e._trav(this,
+e.show.display||{},b=this.tagName;if(!a[b]){var c=document.body.appendChild(document.createElement(b));a[b]=e.css.call(c,"display")}this.style.display=a[b]},hide:function(){this.style.display="none"},css:function(a){return this.currentStyle?this.currentStyle[a]:window.getComputedStyle?document.defaultView.getComputedStyle(this,null).getPropertyValue(a):void 0},data:function(){return this.nette?this.nette:this.nette={}},val:function(){var a,b,c;if(!this.nodeName){a=0;for(b=this.length;a<b;a++)if(this[a].checked)return this[a].value;
+return null}if("select"===this.nodeName.toLowerCase()){a=this.selectedIndex;var d=this.options;if(0>a)return null;if("select-one"===this.type)return d[a].value;a=0;c=[];for(b=d.length;a<b;a++)d[a].selected&&c.push(d[a].value);return c}return"checkbox"===this.type?this.checked:this.value.replace(/^\s+|\s+$/g,"")},_trav:function(a,b,c){for(b=b.split(".");a&&(1!==a.nodeType||b[0]&&a.tagName.toLowerCase()!==b[0]||b[1]&&!e.hasClass.call(a,b[1]));)a=a[c];return k(a)},closest:function(a){return e._trav(this,
 a,"parentNode")},prev:function(a){return e._trav(this.previousSibling,a,"previousSibling")},next:function(a){return e._trav(this.nextSibling,a,"nextSibling")},offset:function(a){for(var b=this,c=a?{left:-a.left||0,top:-a.top||0}:e.position.call(b);b=b.offsetParent;)c.left+=b.offsetLeft,c.top+=b.offsetTop;if(a)e.position.call(this,{left:-c.left,top:-c.top});else return c},position:function(a){if(a)this.nette&&this.nette.onmove&&this.nette.onmove.call(this,a),this.style.left=(a.left||0)+"px",this.style.top=
-(a.top||0)+"px";else return{left:this.offsetLeft,top:this.offsetTop,width:this.offsetWidth,height:this.offsetHeight}},draggable:function(a){var b=i(this),c=document.documentElement,d,a=a||{};i(a.handle||this).bind("mousedown",function(f){f.preventDefault();f.stopPropagation();if(e.draggable.binded)return c.onmouseup(f);var g=b[0].offsetLeft-f.clientX,h=b[0].offsetTop-f.clientY;e.draggable.binded=!0;d=!1;c.onmousemove=function(c){c=c||event;d||(a.draggedClass&&b.addClass(a.draggedClass),a.start&&a.start(c,
+(a.top||0)+"px";else return{left:this.offsetLeft,top:this.offsetTop,width:this.offsetWidth,height:this.offsetHeight}},draggable:function(a){var b=k(this),c=document.documentElement,d;a=a||{};k(a.handle||this).bind("mousedown",function(f){f.preventDefault();f.stopPropagation();if(e.draggable.binded)return c.onmouseup(f);var g=b[0].offsetLeft-f.clientX,h=b[0].offsetTop-f.clientY;e.draggable.binded=!0;d=!1;c.onmousemove=function(c){c=c||event;d||(a.draggedClass&&b.addClass(a.draggedClass),a.start&&a.start(c,
 b),d=!0);b.position({left:c.clientX+g,top:c.clientY+h});return!1};c.onmouseup=function(f){d&&(a.draggedClass&&b.removeClass(a.draggedClass),a.stop&&a.stop(f||event,b));e.draggable.binded=c.onmousemove=c.onmouseup=null;return!1}}).bind("click",function(a){d&&a.stopImmediatePropagation()})}})})();
-(function(){Nette.Debug={};var i=2E4,e=Nette.Q.factory,a=Nette.Debug.Panel=Nette.Class({Extends:Nette.Q,Static:{PEEK:"nette-mode-peek",FLOAT:"nette-mode-float",WINDOW:"nette-mode-window",FOCUSED:"nette-focused",factory:function(b){return new a(b)},_toggle:function(a){var c=a.rel,c="#"===c.charAt(0)?e(c):e(a)["prev"===c?"prev":"next"](c.substring(4));"none"===c.css("display")?(c.show(),a.innerHTML=a.innerHTML.replace("►","▼")):(c.hide(),a.innerHTML=a.innerHTML.replace("▼","►"))}},constructor:function(a){Nette.Q.call(this,
-"#nette-debug-panel-"+a.replace("nette-debug-panel-",""))},reposition:function(){this.hasClass(a.WINDOW)?window.resizeBy(document.documentElement.scrollWidth-document.documentElement.clientWidth,document.documentElement.scrollHeight-document.documentElement.clientHeight):(this.position(this.position()),this.position().width&&(document.cookie=this.dom().id+"="+this.position().left+":"+this.position().top+"; path=/"))},focus:function(){this.hasClass(a.WINDOW)?this.data().win.focus():(clearTimeout(this.data().blurTimeout),
-this.addClass(a.FOCUSED).show(),this[0].style.zIndex=i++)},blur:function(){this.removeClass(a.FOCUSED);if(this.hasClass(a.PEEK)){var b=this;this.data().blurTimeout=setTimeout(function(){b.hide()},50)}},toFloat:function(){this.removeClass(a.WINDOW).removeClass(a.PEEK).addClass(a.FLOAT).show().reposition();return this},toPeek:function(){this.removeClass(a.WINDOW).removeClass(a.FLOAT).addClass(a.PEEK).hide();document.cookie=this.dom().id+"=; path=/"},toWindow:function(){var b=this,c,d;d=this.offset();
-var f=this.dom().id;d.left+="number"===typeof window.screenLeft?window.screenLeft:window.screenX+10;d.top+="number"===typeof window.screenTop?window.screenTop:window.screenY+50;if(c=window.open("",f.replace(/-/g,"_"),"left="+d.left+",top="+d.top+",width="+d.width+",height="+(d.height+15)+",resizable=yes,scrollbars=yes"))d=c.document,d.write('<!DOCTYPE html><meta charset="utf-8"><style>'+e("#nette-debug-style").dom().innerHTML+"</style><script>"+e("#nette-debug-script").dom().innerHTML+'<\/script><body id="nette-debug">'),
-d.body.innerHTML='<div class="nette-panel nette-mode-window" id="'+f+'">'+this.dom().innerHTML+"</div>",c.Nette.Debug.Panel.factory(f).initToggler().reposition(),d.title=b.find("h1").dom().innerHTML,e([c]).bind("unload",function(){b.toPeek();c.close()}),e(d).bind("keyup",function(a){27===a.keyCode&&!a.shiftKey&&!a.altKey&&!a.ctrlKey&&!a.metaKey&&c.close()}),document.cookie=f+"=window; path=/",this.hide().removeClass(a.FLOAT).removeClass(a.PEEK).addClass(a.WINDOW).data().win=c},init:function(){var b=
-this,c;b.data().onmove=function(a){var b=document,c=window.innerWidth||b.documentElement.clientWidth||b.body.clientWidth,b=window.innerHeight||b.documentElement.clientHeight||b.body.clientHeight;a.left=Math.max(Math.min(a.left,0.8*this.offsetWidth),0.2*this.offsetWidth-c);a.top=Math.max(Math.min(a.top,0.8*this.offsetHeight),this.offsetHeight-b)};e(window).bind("resize",function(){b.reposition()});b.draggable({handle:b.find("h1"),stop:function(){b.toFloat()}}).bind("mouseenter",function(){b.focus()}).bind("mouseleave",
-function(){b.blur()});this.initToggler();b.find(".nette-icons").find("a").bind("click",function(a){"close"===this.rel?b.toPeek():b.toWindow();a.preventDefault()});(c=document.cookie.match(RegExp(b.dom().id+"=(window|(-?[0-9]+):(-?[0-9]+))")))?c[2]?b.toFloat().position({left:c[2],top:c[3]}):b.toWindow():b.addClass(a.PEEK)},initToggler:function(){var b=this;this.bind("click",function(c){var d=e(c.target).closest("a").dom();d&&d.rel&&(a._toggle(d),c.preventDefault(),b.reposition())});return this}});
-Nette.Debug.Bar=Nette.Class({Extends:Nette.Q,constructor:function(){Nette.Q.call(this,"#nette-debug-bar")},init:function(){var b=this,c;b.data().onmove=function(a){var b=document,c=window.innerWidth||b.documentElement.clientWidth||b.body.clientWidth,b=window.innerHeight||b.documentElement.clientHeight||b.body.clientHeight;a.left=Math.max(Math.min(a.left,0),this.offsetWidth-c);a.top=Math.max(Math.min(a.top,0),this.offsetHeight-b)};e(window).bind("resize",function(){b.position(b.position())});b.draggable({draggedClass:"nette-dragged",
-stop:function(){document.cookie=b.dom().id+"="+b.position().left+":"+b.position().top+"; path=/"}});b.find("a").bind("click",function(b){if("close"===this.rel)e("#nette-debug").hide(),window.opera&&e("body").show();else if(this.rel){var c=a.factory(this.rel);if(b.shiftKey)c.toFloat().toWindow();else if(c.hasClass(a.FLOAT)){var g=e(this).offset();c.offset({left:g.left-c.position().width+g.width+4,top:g.top-c.position().height-4}).toPeek()}else c.toFloat().position({left:c.position().left-Math.round(100*
-Math.random())-20,top:c.position().top-Math.round(100*Math.random())-20}).reposition()}b.preventDefault()}).bind("mouseenter",function(){if(this.rel&&!("close"===this.rel||b.hasClass("nette-dragged"))){var c=a.factory(this.rel);c.focus();if(c.hasClass(a.PEEK)){var f=e(this).offset();c.offset({left:f.left-c.position().width+f.width+4,top:f.top-c.position().height-4})}}}).bind("mouseleave",function(){this.rel&&!("close"===this.rel||b.hasClass("nette-dragged"))&&a.factory(this.rel).blur()});(c=document.cookie.match(RegExp(b.dom().id+
-"=(-?[0-9]+):(-?[0-9]+)")))&&b.position({left:c[1],top:c[2]});b.find("a").each(function(){this.rel&&"close"!==this.rel&&a.factory(this.rel).init()})}})})();/*]]>*/</script>
+(function(){Nette.Debug={};var k=2E4,e=Nette.Q.factory,a=Nette.Debug.Panel=Nette.Class({Extends:Nette.Q,Static:{PEEK:"nette-mode-peek",FLOAT:"nette-mode-float",WINDOW:"nette-mode-window",FOCUSED:"nette-focused",factory:function(b){return new a(b)},_toggle:function(a){var c=a.rel,c="#"===c.charAt(0)?e(c):e(a)["prev"===c?"prev":"next"](c.substring(4));"none"===c.css("display")?(c.show(),a.innerHTML=a.innerHTML.replace("►","▼")):(c.hide(),a.innerHTML=a.innerHTML.replace("▼","►"))}},constructor:function(a){Nette.Q.call(this,
+"#nette-debug-panel-"+a.replace("nette-debug-panel-",""))},reposition:function(){this.hasClass(a.WINDOW)?window.resizeBy(document.documentElement.scrollWidth-document.documentElement.clientWidth,document.documentElement.scrollHeight-document.documentElement.clientHeight):(this.position(this.position()),this.position().width&&(document.cookie=this.dom().id+"="+this.position().left+":"+this.position().top+"; path=/"))},focus:function(b){if(this.hasClass(a.WINDOW))this.data().win.focus();else{var c=
+this;clearTimeout(this.data().displayTimeout);this.data().displayTimeout=setTimeout(function(){c.addClass(a.FOCUSED).show();c[0].style.zIndex=k++;b&&b()},50)}},blur:function(){this.removeClass(a.FOCUSED);if(this.hasClass(a.PEEK)){var b=this;clearTimeout(this.data().displayTimeout);this.data().displayTimeout=setTimeout(function(){b.hide()},50)}},toFloat:function(){this.removeClass(a.WINDOW).removeClass(a.PEEK).addClass(a.FLOAT).show().reposition();return this},toPeek:function(){this.removeClass(a.WINDOW).removeClass(a.FLOAT).addClass(a.PEEK).hide();
+document.cookie=this.dom().id+"=; path=/"},toWindow:function(){var b=this,c,d;d=this.offset();var f=this.dom().id;d.left+="number"===typeof window.screenLeft?window.screenLeft:window.screenX+10;d.top+="number"===typeof window.screenTop?window.screenTop:window.screenY+50;if(c=window.open("",f.replace(/-/g,"_"),"left="+d.left+",top="+d.top+",width="+d.width+",height="+(d.height+15)+",resizable=yes,scrollbars=yes"))d=c.document,d.write('<!DOCTYPE html><meta charset="utf-8"><style>'+e("#nette-debug-style").dom().innerHTML+
+"</style><script>"+e("#nette-debug-script").dom().innerHTML+'\x3c/script><body id="nette-debug">'),d.body.innerHTML='<div class="nette-panel nette-mode-window" id="'+f+'">'+this.dom().innerHTML+"</div>",c.Nette.Debug.Panel.factory(f).initToggler().reposition(),d.title=b.find("h1").dom().innerHTML,e([c]).bind("unload",function(){b.toPeek();c.close()}),e(d).bind("keyup",function(a){27!==a.keyCode||(a.shiftKey||a.altKey||a.ctrlKey||a.metaKey)||c.close()}),document.cookie=f+"=window; path=/",this.hide().removeClass(a.FLOAT).removeClass(a.PEEK).addClass(a.WINDOW).data().win=
+c},init:function(){var b=this,c;b.data().onmove=function(a){var b=document,c=window.innerWidth||b.documentElement.clientWidth||b.body.clientWidth,b=window.innerHeight||b.documentElement.clientHeight||b.body.clientHeight;a.left=Math.max(Math.min(a.left,0.8*this.offsetWidth),0.2*this.offsetWidth-c);a.top=Math.max(Math.min(a.top,0.8*this.offsetHeight),this.offsetHeight-b)};e(window).bind("resize",function(){b.reposition()});b.draggable({handle:b.find("h1"),stop:function(){b.toFloat()}}).bind("mouseenter",
+function(a){b.focus()}).bind("mouseleave",function(a){b.blur()});this.initToggler();b.find(".nette-icons").find("a").bind("click",function(a){"close"===this.rel?b.toPeek():b.toWindow();a.preventDefault()});(c=document.cookie.match(RegExp(b.dom().id+"=(window|(-?[0-9]+):(-?[0-9]+))")))?c[2]?b.toFloat().position({left:c[2],top:c[3]}):b.toWindow():b.addClass(a.PEEK)},initToggler:function(){var b=this;this.bind("click",function(c){var d=e(c.target).closest("a").dom();d&&d.rel&&(a._toggle(d),c.preventDefault(),
+b.reposition())});return this}});Nette.Debug.Bar=Nette.Class({Extends:Nette.Q,constructor:function(){Nette.Q.call(this,"#nette-debug-bar")},init:function(){var b=this,c;b.data().onmove=function(a){var b=document,c=window.innerWidth||b.documentElement.clientWidth||b.body.clientWidth,b=window.innerHeight||b.documentElement.clientHeight||b.body.clientHeight;a.left=Math.max(Math.min(a.left,0),this.offsetWidth-c);a.top=Math.max(Math.min(a.top,0),this.offsetHeight-b)};e(window).bind("resize",function(){b.position(b.position())});
+b.draggable({draggedClass:"nette-dragged",stop:function(){document.cookie=b.dom().id+"="+b.position().left+":"+b.position().top+"; path=/"}});b.find("a").bind("click",function(b){if("close"===this.rel)e("#nette-debug").hide(),window.opera&&e("body").show();else if(this.rel){var c=a.factory(this.rel);if(b.shiftKey)c.toFloat().toWindow();else if(c.hasClass(a.FLOAT)){var g=e(this).offset();c.offset({left:g.left-c.position().width+g.width+4,top:g.top-c.position().height-4}).toPeek()}else c.toFloat().position({left:c.position().left-
+Math.round(100*Math.random())-20,top:c.position().top-Math.round(100*Math.random())-20}).reposition()}b.preventDefault()}).bind("mouseenter",function(c){if(this.rel&&"close"!==this.rel&&!b.hasClass("nette-dragged")){var f=a.factory(this.rel),g=e(this);f.focus(function(){if(f.hasClass(a.PEEK)){var b=g.offset();f.offset({left:b.left-f.position().width+b.width+4,top:b.top-f.position().height-4})}})}}).bind("mouseleave",function(c){this.rel&&("close"!==this.rel&&!b.hasClass("nette-dragged"))&&a.factory(this.rel).blur()});
+(c=document.cookie.match(RegExp(b.dom().id+"=(-?[0-9]+):(-?[0-9]+)")))&&b.position({left:c[1],top:c[2]});b.find("a").each(function(){this.rel&&"close"!==this.rel&&a.factory(this.rel).init()})}})})();/*]]>*/</script>
 
 
 <?php foreach($panels
@@ -1023,7 +1024,7 @@ array_sum($data)?> errors</span>
 <?php }return
 ob_get_clean();}function
 getPanel(){ob_start();$data=$this->data;if($this->id==='dumps'){?>
-<style>#nette-debug .nette-DumpPanel h2{font:11pt/1.5 sans-serif;margin:0;padding:2px 8px;background:#3484d2;color:white}#nette-debug .nette-DumpPanel table{width:100%}#nette-debug .nette-DumpPanel a{color:#333;background:transparent}#nette-debug .nette-DumpPanel a abbr{font-family:sans-serif;color:#999}#nette-debug .nette-DumpPanel pre .php-array,#nette-debug .nette-DumpPanel pre .php-object{color:#c16549}</style>
+<style class="nette-debug">#nette-debug .nette-DumpPanel h2{font:11pt/1.5 sans-serif;margin:0;padding:2px 8px;background:#3484d2;color:white}#nette-debug .nette-DumpPanel table{width:100%}#nette-debug .nette-DumpPanel a{color:#333;background:transparent}#nette-debug .nette-DumpPanel a abbr{font-family:sans-serif;color:#999}#nette-debug .nette-DumpPanel pre .php-array,#nette-debug .nette-DumpPanel pre .php-object{color:#c16549}</style>
 
 
 <h1>Dumped variables</h1>
@@ -1104,7 +1105,64 @@ stream_stat(){return
 fstat($this->tempHandle);}function
 url_stat($path,$flags){$path=substr($path,strlen(self::PROTOCOL)+3);return($flags&STREAM_URL_STAT_LINK)?@lstat($path):@stat($path);}function
 unlink($path){$path=substr($path,strlen(self::PROTOCOL)+3);return
-unlink($path);}}}namespace Nette\Application{use
+unlink($path);}}}namespace Nette\Config{use
+Nette;use
+Nette\Caching\Cache;class
+Configurator
+extends
+Nette\Object{const
+AUTO=NULL,NONE=FALSE;const
+DEVELOPMENT='development',PRODUCTION='production';public$onCompile;protected$parameters;protected$files=array();function
+__construct(){$this->parameters=$this->getDefaultParameters();}function
+setDebugMode($value=TRUE){$this->parameters['debugMode']=is_string($value)||is_array($value)?static::detectDebugMode($value):(bool)$value;$this->parameters['productionMode']=!$this->parameters['debugMode'];return$this;}function
+isDebugMode(){return!$this->parameters['productionMode'];}function
+setTempDirectory($path){$this->parameters['tempDir']=$path;if(($cacheDir=$this->getCacheDirectory())&&!is_dir($cacheDir)){mkdir($cacheDir);}return$this;}function
+addParameters(array$params){$this->parameters=Helpers::merge($params,$this->parameters);return$this;}protected
+function
+getDefaultParameters(){$trace=debug_backtrace(FALSE);$debugMode=static::detectDebugMode();return
+array('appDir'=>isset($trace[1]['file'])?dirname($trace[1]['file']):NULL,'wwwDir'=>isset($_SERVER['SCRIPT_FILENAME'])?dirname($_SERVER['SCRIPT_FILENAME']):NULL,'debugMode'=>$debugMode,'productionMode'=>!$debugMode,'environment'=>$debugMode?'development':'production','consoleMode'=>PHP_SAPI==='cli','container'=>array('class'=>'SystemContainer','parent'=>'Nette\DI\Container'));}function
+enableDebugger($logDirectory=NULL,$email=NULL){Nette\Diagnostics\Debugger::$strictMode=TRUE;Nette\Diagnostics\Debugger::enable($this->parameters['productionMode'],$logDirectory,$email);}function
+createRobotLoader(){if(!($cacheDir=$this->getCacheDirectory())){throw
+new
+Nette\InvalidStateException("Set path to temporary directory using setTempDirectory().");}$loader=new
+Nette\Loaders\RobotLoader;$loader->setCacheStorage(new
+Nette\Caching\Storages\FileStorage($cacheDir));$loader->autoRebuild=!$this->parameters['productionMode'];return$loader;}function
+addConfig($file,$section=NULL){$this->files[]=array($file,$section===NULL?$this->parameters['environment']:$section);return$this;}function
+loadConfig($file,$section=NULL){trigger_error(__METHOD__.'() is deprecated; use addConfig(file, [section])->createContainer() instead.',E_USER_WARNING);return$this->addConfig($file,$section)->createContainer();}function
+createContainer(){if($cacheDir=$this->getCacheDirectory()){$cache=new
+Cache(new
+Nette\Caching\Storages\PhpFileStorage($cacheDir),'Nette.Configurator');$cacheKey=array($this->parameters,$this->files);$cached=$cache->load($cacheKey);if(!$cached){$code=$this->buildContainer($dependencies);$cache->save($cacheKey,$code,array(Cache::FILES=>$dependencies));$cached=$cache->load($cacheKey);}Nette\Utils\LimitedScope::load($cached['file'],TRUE);}elseif($this->files){throw
+new
+Nette\InvalidStateException("Set path to temporary directory using setTempDirectory().");}else{Nette\Utils\LimitedScope::evaluate($this->buildContainer());}$container=new$this->parameters['container']['class'];$container->initialize();Nette\Environment::setContext($container);return$container;}protected
+function
+buildContainer(&$dependencies=NULL){$loader=$this->createLoader();$config=array();$code="<?php\n";foreach($this->files
+as$tmp){list($file,$section)=$tmp;$config=Helpers::merge($loader->load($file,$section),$config);$code.="// source: $file $section\n";}$code.="\n";$this->checkCompatibility($config);if(!isset($config['parameters'])){$config['parameters']=array();}$config['parameters']=Helpers::merge($config['parameters'],$this->parameters);$compiler=$this->createCompiler();$this->onCompile($this,$compiler);$code.=$compiler->compile($config,$this->parameters['container']['class'],$config['parameters']['container']['parent']);$dependencies=array_merge($loader->getDependencies(),$this->isDebugMode()?$compiler->getContainerBuilder()->getDependencies():array());return$code;}protected
+function
+checkCompatibility(array$config){foreach(array('service'=>'services','variable'=>'parameters','variables'=>'parameters','mode'=>'parameters','const'=>'constants')as$old=>$new){if(isset($config[$old])){throw
+new
+Nette\DeprecatedException("Section '$old' in configuration file is deprecated; use '$new' instead.");}}if(isset($config['services'])){foreach($config['services']as$key=>$def){foreach(array('option'=>'arguments','methods'=>'setup')as$old=>$new){if(is_array($def)&&isset($def[$old])){throw
+new
+Nette\DeprecatedException("Section '$old' in service definition is deprecated; refactor it into '$new'.");}}}}}protected
+function
+createCompiler(){$compiler=new
+Compiler;$compiler->addExtension('php',new
+Extensions\PhpExtension)->addExtension('constants',new
+Extensions\ConstantsExtension)->addExtension('nette',new
+Extensions\NetteExtension);return$compiler;}protected
+function
+createLoader(){return
+new
+Loader;}protected
+function
+getCacheDirectory(){return
+empty($this->parameters['tempDir'])?NULL:$this->parameters['tempDir'].'/cache';}static
+function
+detectDebugMode($list=NULL){$list=is_string($list)?preg_split('#[,\s]+#',$list):(array)$list;if(!isset($_SERVER['HTTP_X_FORWARDED_FOR'])){$list[]='127.0.0.1';$list[]='::1';}return
+in_array(isset($_SERVER['REMOTE_ADDR'])?$_SERVER['REMOTE_ADDR']:php_uname('n'),$list,TRUE);}function
+setProductionMode($value=TRUE){return$this->setDebugMode(is_bool($value)?!$value:$value);}function
+isProductionMode(){return!$this->isDebugMode();}static
+function
+detectProductionMode($list=NULL){return!static::detectDebugMode($list);}}}namespace Nette\Application{use
 Nette;class
 Application
 extends
@@ -1177,7 +1235,7 @@ htmlSpecialChars($this->request->getPresenterName().':'.(isset($this->request->p
 return
 ob_get_clean();}function
 getPanel(){ob_start();?>
-<style>#nette-debug .nette-RoutingPanel table{font:9pt/1.5 Consolas,monospace}#nette-debug .nette-RoutingPanel .yes td{color:green}#nette-debug .nette-RoutingPanel .may td{color:#67F}#nette-debug .nette-RoutingPanel pre,#nette-debug .nette-RoutingPanel code{display:inline}#nette-debug .nette-RoutingPanel code .nette-collapsed{display:none}</style>
+<style class="nette-debug">#nette-debug .nette-RoutingPanel table{font:9pt/1.5 Consolas,monospace}#nette-debug .nette-RoutingPanel .yes td{color:green}#nette-debug .nette-RoutingPanel .may td{color:#67F}#nette-debug .nette-RoutingPanel pre,#nette-debug .nette-RoutingPanel code{display:inline}#nette-debug .nette-RoutingPanel code .nette-collapsed{display:none}</style>
 
 <div class="nette-RoutingPanel">
 <h1>
@@ -1318,7 +1376,7 @@ Application\IPresenter{private$context;private$request;function
 __construct(Nette\DI\Container$context){$this->context=$context;}final
 function
 getContext(){return$this->context;}function
-run(Application\Request$request){$this->request=$request;$httpRequest=$this->context->getByType('Nette\Http\IRequest');if(!$httpRequest->isAjax()&&($request->isMethod('get')||$request->isMethod('head'))){$refUrl=clone$httpRequest->getUrl();$url=$this->context->router->constructUrl($request,$refUrl->setPath($refUrl->getScriptPath()));if($url!==NULL&&!$httpRequest->getUrl()->isEqual($url)){return
+run(Application\Request$request){$this->request=$request;$httpRequest=$this->context->getByType('Nette\Http\IRequest');if(!$httpRequest->isAjax()&&($request->isMethod('get')||$request->isMethod('head'))){$refUrl=clone$httpRequest->getUrl();$url=$this->context->getService('router')->constructUrl($request,$refUrl->setPath($refUrl->getScriptPath()));if($url!==NULL&&!$httpRequest->getUrl()->isEqual($url)){return
 new
 Responses\RedirectResponse($url,Http\IResponse::S301_MOVED_PERMANENTLY);}}$params=$request->getParameters();if(!isset($params['callback'])){throw
 new
@@ -1329,7 +1387,7 @@ Nette\Templating\ITemplate){return
 new
 Responses\TextResponse($response);}else{return$response;}}function
 createTemplate($class=NULL,$latteFactory=NULL){$template=$class?new$class:new
-Nette\Templating\FileTemplate;$template->setParameters($this->request->getParameters());$template->presenter=$this;$template->context=$context=$this->context;$url=$context->getByType('Nette\Http\IRequest')->getUrl();$template->baseUrl=rtrim($url->getBaseUrl(),'/');$template->basePath=rtrim($url->getBasePath(),'/');$template->registerHelperLoader('Nette\Templating\Helpers::loader');$template->setCacheStorage($context->nette->templateCacheStorage);$template->onPrepareFilters[]=function($template)use($latteFactory,$context){$template->registerFilter($latteFactory?$latteFactory():new
+Nette\Templating\FileTemplate;$template->setParameters($this->request->getParameters());$template->presenter=$this;$template->context=$context=$this->context;$url=$context->getByType('Nette\Http\IRequest')->getUrl();$template->baseUrl=rtrim($url->getBaseUrl(),'/');$template->basePath=rtrim($url->getBasePath(),'/');$template->registerHelperLoader('Nette\Templating\Helpers::loader');$template->setCacheStorage($context->getService('nette.templateCacheStorage'));$template->onPrepareFilters[]=function($template)use($latteFactory){$template->registerFilter($latteFactory?$latteFactory():new
 Nette\Latte\Engine);};return$template;}function
 redirectUrl($url,$code=Http\IResponse::S302_FOUND){return
 new
@@ -1340,6 +1398,8 @@ Application\BadRequestException($message,$code);}function
 getRequest(){return$this->request;}}}namespace Nette\Application{use
 Nette;class
 PresenterFactory
+extends
+Nette\Object
 implements
 IPresenterFactory{public$caseSensitive=FALSE;private$baseDir;private$cache=array();private$container;function
 __construct($baseDir,Nette\DI\Container$container){$this->baseDir=$baseDir;$this->container=$container;}function
@@ -1520,7 +1580,8 @@ as$name=>$meta){if(isset($params[$name])){if(!is_scalar($params[$name])){}elseif
 NULL;}elseif(isset($meta[self::FILTER_IN])){$params[$name]=call_user_func($meta[self::FILTER_IN],(string)$params[$name]);if($params[$name]===NULL&&!isset($meta['fixity'])){return
 NULL;}}}elseif(isset($meta['fixity'])){$params[$name]=$meta[self::VALUE];}}if(!isset($params[self::PRESENTER_KEY])){throw
 new
-Nette\InvalidStateException('Missing presenter in route definition.');}if(isset($this->metadata[self::MODULE_KEY])){if(!isset($params[self::MODULE_KEY])){throw
+Nette\InvalidStateException('Missing presenter in route definition.');}elseif(!is_string($params[self::PRESENTER_KEY])){return
+NULL;}if(isset($this->metadata[self::MODULE_KEY])){if(!isset($params[self::MODULE_KEY])){throw
 new
 Nette\InvalidStateException('Missing module in route definition.');}$presenter=$params[self::MODULE_KEY].':'.$params[self::PRESENTER_KEY];unset($params[self::MODULE_KEY],$params[self::PRESENTER_KEY]);}else{$presenter=$params[self::PRESENTER_KEY];unset($params[self::PRESENTER_KEY]);}return
 new
@@ -1528,7 +1589,7 @@ Application\Request($presenter,$httpRequest->getMethod(),$params,$httpRequest->g
 constructUrl(Application\Request$appRequest,Nette\Http\Url$refUrl){if($this->flags&self::ONE_WAY){return
 NULL;}$params=$appRequest->getParameters();$metadata=$this->metadata;$presenter=$appRequest->getPresenterName();$params[self::PRESENTER_KEY]=$presenter;if(isset($metadata[self::MODULE_KEY])){$module=$metadata[self::MODULE_KEY];if(isset($module['fixity'])&&strncasecmp($presenter,$module[self::VALUE].':',strlen($module[self::VALUE])+1)===0){$a=strlen($module[self::VALUE]);}else{$a=strrpos($presenter,':');}if($a===FALSE){$params[self::MODULE_KEY]='';}else{$params[self::MODULE_KEY]=substr($presenter,0,$a);$params[self::PRESENTER_KEY]=substr($presenter,$a+1);}}foreach($metadata
 as$name=>$meta){if(!isset($params[$name])){continue;}if(isset($meta['fixity'])){if($params[$name]===FALSE){$params[$name]='0';}if(is_scalar($params[$name])?strcasecmp($params[$name],$meta[self::VALUE])===0:$params[$name]===$meta[self::VALUE]){unset($params[$name]);continue;}elseif($meta['fixity']===self::CONSTANT){return
-NULL;}}if(!is_scalar($params[$name])){}elseif(isset($meta['filterTable2'][$params[$name]])){$params[$name]=$meta['filterTable2'][$params[$name]];}elseif(isset($meta['filterTable2'])&&!empty($meta[self::FILTER_STRICT])){return
+NULL;}}if(is_scalar($params[$name])&&isset($meta['filterTable2'][$params[$name]])){$params[$name]=$meta['filterTable2'][$params[$name]];}elseif(isset($meta['filterTable2'])&&!empty($meta[self::FILTER_STRICT])){return
 NULL;}elseif(isset($meta[self::FILTER_OUT])){$params[$name]=call_user_func($meta[self::FILTER_OUT],$params[$name]);}if(isset($meta[self::PATTERN])&&!preg_match($meta[self::PATTERN],rawurldecode($params[$name]))){return
 NULL;}}$sequence=$this->sequence;$brackets=array();$required=NULL;$url='';$i=count($sequence)-1;do{$url=$sequence[$i].$url;if($i===0){break;}$i--;$name=$sequence[$i];$i--;if($name===']'){$brackets[]=$url;}elseif($name[0]==='['){$tmp=array_pop($brackets);if($required<count($brackets)+1){if($name!=='[!'){$url=$tmp;}}else{$required=count($brackets);}}elseif($name[0]==='?'){continue;}elseif(isset($params[$name])&&$params[$name]!=''){$required=count($brackets);$url=$params[$name].$url;unset($params[$name]);}elseif(isset($metadata[$name]['fixity'])){if($required===NULL&&!$brackets){$url='';}else{$url=$metadata[$name]['defOut'].$url;}}else{return
 NULL;}}while(TRUE);if($this->xlat){$params=self::renameKeys($params,$this->xlat);}$sep=ini_get('arg_separator.input');$query=http_build_query($params,'',$sep?$sep[0]:'&');if($query!=''){$url.='?'.$query;}if($this->type===self::RELATIVE){$url='//'.$refUrl->getAuthority().$refUrl->getBasePath().$url;}elseif($this->type===self::PATH){$url='//'.$refUrl->getAuthority().$url;}if(strpos($url,'//',2)!==FALSE){return
@@ -1639,9 +1700,8 @@ __construct($defaults=array(),$flags=0){if(is_string($defaults)){$a=strrpos($def
 new
 Nette\InvalidArgumentException("Argument must be array or string in format Presenter:action, '$defaults' given.");}$defaults=array(self::PRESENTER_KEY=>substr($defaults,0,$a),'action'=>$a===strlen($defaults)-1?Application\UI\Presenter::DEFAULT_ACTION:substr($defaults,$a+1));}if(isset($defaults[self::MODULE_KEY])){$this->module=$defaults[self::MODULE_KEY].':';unset($defaults[self::MODULE_KEY]);}$this->defaults=$defaults;$this->flags=$flags;}function
 match(Nette\Http\IRequest$httpRequest){if($httpRequest->getUrl()->getPathInfo()!==''){return
-NULL;}$params=$httpRequest->getQuery();$params+=$this->defaults;if(!isset($params[self::PRESENTER_KEY])){throw
-new
-Nette\InvalidStateException('Missing presenter.');}$presenter=$this->module.$params[self::PRESENTER_KEY];unset($params[self::PRESENTER_KEY]);return
+NULL;}$params=$httpRequest->getQuery();$params+=$this->defaults;if(!isset($params[self::PRESENTER_KEY])||!is_string($params[self::PRESENTER_KEY])){return
+NULL;}$presenter=$this->module.$params[self::PRESENTER_KEY];unset($params[self::PRESENTER_KEY]);return
 new
 Application\Request($presenter,$httpRequest->getMethod(),$params,$httpRequest->getPost(),$httpRequest->getFiles(),array(Application\Request::SECURED=>$httpRequest->isSecured()));}function
 constructUrl(Application\Request$appRequest,Nette\Http\Url$refUrl){if($this->flags&self::ONE_WAY){return
@@ -1793,12 +1853,12 @@ signalReceived($signal){if(!$this->tryCall($this->formatSignalMethod($signal),$t
 new
 BadSignalException("There is no handler for signal '$signal' in class $class.");}}function
 formatSignalMethod($signal){return$signal==NULL?NULL:'handle'.$signal;}function
-link($destination,$args=array()){if(!is_array($args)){$args=func_get_args();array_shift($args);}try{return$this->getPresenter()->createRequest($this,$destination,$args,'link');}catch(InvalidLinkException$e){return$this->getPresenter()->handleInvalidLink($e);}}function
-lazyLink($destination,$args=array()){if(!is_array($args)){$args=func_get_args();array_shift($args);}return
+link($destination,$args=array()){try{return$this->getPresenter()->createRequest($this,$destination,is_array($args)?$args:array_slice(func_get_args(),1),'link');}catch(InvalidLinkException$e){return$this->getPresenter()->handleInvalidLink($e);}}function
+lazyLink($destination,$args=array()){return
 new
-Link($this,$destination,$args);}function
-isLinkCurrent($destination=NULL,$args=array()){if($destination!==NULL){if(!is_array($args)){$args=func_get_args();array_shift($args);}$this->getPresenter()->createRequest($this,$destination,$args,'test');}return$this->getPresenter()->getLastCreatedRequestFlag('current');}function
-redirect($code,$destination=NULL,$args=array()){if(!is_numeric($code)){$args=$destination;$destination=$code;$code=NULL;}if(!is_array($args)){$args=func_get_args();if(is_numeric(array_shift($args))){array_shift($args);}}$presenter=$this->getPresenter();$presenter->redirectUrl($presenter->createRequest($this,$destination,$args,'redirect'),$code);}final
+Link($this,$destination,is_array($args)?$args:array_slice(func_get_args(),1));}function
+isLinkCurrent($destination=NULL,$args=array()){if($destination!==NULL){$this->getPresenter()->createRequest($this,$destination,is_array($args)?$args:array_slice(func_get_args(),1),'test');}return$this->getPresenter()->getLastCreatedRequestFlag('current');}function
+redirect($code,$destination=NULL,$args=array()){if(!is_numeric($code)){$args=$destination;$destination=$code;$code=NULL;}if(!is_array($args)){$args=array_slice(func_get_args(),is_numeric($code)?2:1);}$presenter=$this->getPresenter();$presenter->redirectUrl($presenter->createRequest($this,$destination,$args,'redirect'),$code);}final
 function
 offsetSet($name,$component){$this->addComponent($component,$name);}final
 function
@@ -1823,7 +1883,7 @@ function
 createTemplate($class=NULL){$template=$class?new$class:new
 Nette\Templating\FileTemplate;$presenter=$this->getPresenter(FALSE);$template->onPrepareFilters[]=$this->templatePrepareFilters;$template->registerHelperLoader('Nette\Templating\Helpers::loader');$template->control=$template->_control=$this;$template->presenter=$template->_presenter=$presenter;if($presenter
 instanceof
-Presenter){$template->setCacheStorage($presenter->getContext()->nette->templateCacheStorage);$template->user=$presenter->getUser();$template->netteHttpResponse=$presenter->getHttpResponse();$template->netteCacheStorage=$presenter->getContext()->getByType('Nette\Caching\IStorage');$template->baseUri=$template->baseUrl=rtrim($presenter->getHttpRequest()->getUrl()->getBaseUrl(),'/');$template->basePath=preg_replace('#https?://[^/]+#A','',$template->baseUrl);if($presenter->hasFlashSession()){$id=$this->getParameterId('flash');$template->flashes=$presenter->getFlashSession()->$id;}}if(!isset($template->flashes)||!is_array($template->flashes)){$template->flashes=array();}return$template;}function
+Presenter){$template->setCacheStorage($presenter->getContext()->getService('nette.templateCacheStorage'));$template->user=$presenter->getUser();$template->netteHttpResponse=$presenter->getHttpResponse();$template->netteCacheStorage=$presenter->getContext()->getByType('Nette\Caching\IStorage');$template->baseUri=$template->baseUrl=rtrim($presenter->getHttpRequest()->getUrl()->getBaseUrl(),'/');$template->basePath=preg_replace('#https?://[^/]+#A','',$template->baseUrl);if($presenter->hasFlashSession()){$id=$this->getParameterId('flash');$template->flashes=$presenter->getFlashSession()->$id;}}if(!isset($template->flashes)||!is_array($template->flashes)){$template->flashes=array();}return$template;}function
 templatePrepareFilters($template){$template->registerFilter($this->getPresenter()->getContext()->nette->createLatte());}function
 getWidget($name){trigger_error(__METHOD__.'() is deprecated, use getComponent() instead.',E_USER_WARNING);return$this->getComponent($name);}function
 flashMessage($message,$type='info'){$id=$this->getParameterId('flash');$messages=$this->getPresenter()->getFlashSession()->$id;$messages[]=$flash=(object)array('message'=>$message,'type'=>$type);$this->getTemplate()->flashes=$messages;$this->getPresenter()->getFlashSession()->$id=$messages;return$flash;}function
@@ -1848,7 +1908,7 @@ setDefaults($values,$erase=FALSE){$form=$this->getForm(FALSE);if(!$form||!$form-
 setValues($values,$erase=FALSE){if($values
 instanceof\Traversable){$values=iterator_to_array($values);}elseif(!is_array($values)){throw
 new
-Nette\InvalidArgumentException("First parameter must be an array, ".gettype($values)." given.");}foreach($this->getComponents()as$name=>$control){if($control
+Nette\InvalidArgumentException('First parameter must be an array, '.gettype($values).' given.');}foreach($this->getComponents()as$name=>$control){if($control
 instanceof
 IControl){if(array_key_exists($name,$values)){$control->setValue($values[$name]);}elseif($erase){$control->setValue(NULL);}}elseif($control
 instanceof
@@ -1955,21 +2015,19 @@ getTranslator(){return$this->translator;}function
 isAnchored(){return
 TRUE;}final
 function
-isSubmitted(){if($this->submittedBy===NULL&&count($this->getControls())){$this->submittedBy=(bool)$this->getHttpData();}return$this->submittedBy;}final
+isSubmitted(){if($this->submittedBy===NULL){$this->getHttpData();}return$this->submittedBy;}final
 function
 isSuccess(){return$this->isSubmitted()&&$this->isValid();}function
 setSubmittedBy(ISubmitterControl$by=NULL){$this->submittedBy=$by===NULL?FALSE:$by;return$this;}final
 function
 getHttpData(){if($this->httpData===NULL){if(!$this->isAnchored()){throw
 new
-Nette\InvalidStateException('Form is not anchored and therefore can not determine whether it was submitted.');}$this->httpData=$this->receiveHttpData();}return$this->httpData;}function
+Nette\InvalidStateException('Form is not anchored and therefore can not determine whether it was submitted.');}$data=$this->receiveHttpData();$this->httpData=(array)$data;$this->submittedBy=is_array($data);}return$this->httpData;}function
 fireEvents(){if(!$this->isSubmitted()){return;}elseif($this->submittedBy
 instanceof
 ISubmitterControl){if(!$this->submittedBy->getValidationScope()||$this->isValid()){$this->submittedBy->click();$valid=TRUE;}else{$this->submittedBy->onInvalidClick($this->submittedBy);}}if(isset($valid)||$this->isValid()){$this->onSuccess($this);}else{$this->onError($this);if($this->onInvalidSubmit){trigger_error(__CLASS__.'->onInvalidSubmit is deprecated; use onError instead.',E_USER_WARNING);$this->onInvalidSubmit($this);}}if($this->onSuccess){$this->onSubmit($this);}elseif($this->onSubmit){trigger_error(__CLASS__.'->onSubmit changed its behavior; use onSuccess instead.',E_USER_WARNING);if(isset($valid)||$this->isValid()){$this->onSubmit($this);}}}protected
 function
-receiveHttpData(){$httpRequest=$this->getHttpRequest();if(strcasecmp($this->getMethod(),$httpRequest->getMethod())){return
-array();}if($httpRequest->isMethod('post')){$data=Nette\Utils\Arrays::mergeTree($httpRequest->getPost(),$httpRequest->getFiles());}else{$data=$httpRequest->getQuery();}if($tracker=$this->getComponent(self::TRACKER_ID,FALSE)){if(!isset($data[self::TRACKER_ID])||$data[self::TRACKER_ID]!==$tracker->getValue()){return
-array();}}return$data;}function
+receiveHttpData(){$httpRequest=$this->getHttpRequest();if(strcasecmp($this->getMethod(),$httpRequest->getMethod())){return;}if($httpRequest->isMethod('post')){$data=Nette\Utils\Arrays::mergeTree($httpRequest->getPost(),$httpRequest->getFiles());}else{$data=$httpRequest->getQuery();if(!$data){return;}}if($tracker=$this->getComponent(self::TRACKER_ID,FALSE)){if(!isset($data[self::TRACKER_ID])||$data[self::TRACKER_ID]!==$tracker->getValue()){return;}}return$data;}function
 getValues($asArray=FALSE){$values=parent::getValues($asArray);unset($values[self::TRACKER_ID],$values[self::PROTECTOR_ID]);return$values;}function
 addError($message){$this->valid=FALSE;if($message!==NULL&&!in_array($message,$this->errors,TRUE)){$this->errors[]=$message;}}function
 getErrors(){return$this->errors;}function
@@ -2001,7 +2059,7 @@ function
 attached($presenter){if($presenter
 instanceof
 Presenter){$name=$this->lookupPath('Nette\Application\UI\Presenter');if(!isset($this->getElementPrototype()->id)){$this->getElementPrototype()->id='frm-'.$name;}$this->setAction(new
-Link($presenter,$name.self::NAME_SEPARATOR.'submit!',array()));if($this->isSubmitted()){foreach($this->getControls()as$control){if(!$control->isDisabled()){$control->loadHttpData();}}}}parent::attached($presenter);}function
+Link($presenter,$name.self::NAME_SEPARATOR.'submit!',array()));if(iterator_count($this->getControls())&&$this->isSubmitted()){foreach($this->getControls()as$control){if(!$control->isDisabled()){$control->loadHttpData();}}}}parent::attached($presenter);}function
 isAnchored(){return(bool)$this->getPresenter(FALSE);}protected
 function
 receiveHttpData(){$presenter=$this->getPresenter();if(!$presenter->isSignalReceiver($this,'submit')){return;}$isPost=$this->getMethod()===self::POST;$request=$presenter->getRequest();if($request->isMethod('forward')||$request->isMethod('post')!==$isPost){return;}if($isPost){return
@@ -2117,7 +2175,7 @@ Application\AbortException();}function
 forward($destination,$args=array()){if($destination
 instanceof
 Application\Request){$this->sendResponse(new
-Responses\ForwardResponse($destination));}elseif(!is_array($args)){$args=func_get_args();array_shift($args);}$this->createRequest($this,$destination,$args,'forward');$this->sendResponse(new
+Responses\ForwardResponse($destination));}$this->createRequest($this,$destination,is_array($args)?$args:array_slice(func_get_args(),1),'forward');$this->sendResponse(new
 Responses\ForwardResponse($this->lastCreatedRequest));}function
 redirectUrl($url,$code=NULL){if($this->isAjax()){$this->payload->redirect=(string)$url;$this->sendPayload();}elseif(!$code){$code=$this->getHttpRequest()->isMethod('post')?Http\IResponse::S303_POST_GET:Http\IResponse::S302_FOUND;}$this->sendResponse(new
 Responses\RedirectResponse($url,$code));}function
@@ -2302,8 +2360,8 @@ function
 completeDependencies($dp,$data){if(is_object($data)){$dp[self::CALLBACKS][]=array(array(__CLASS__,'checkSerializationVersion'),get_class($data),Nette\Reflection\ClassType::from($data)->getAnnotation('serializationVersion'));}if(isset($dp[Cache::EXPIRATION])){$dp[Cache::EXPIRATION]=Nette\DateTime::from($dp[Cache::EXPIRATION])->format('U')-time();}if(isset($dp[self::FILES])){foreach(array_unique((array)$dp[self::FILES])as$item){$dp[self::CALLBACKS][]=array(array(__CLASS__,'checkFile'),$item,@filemtime($item));}unset($dp[self::FILES]);}if(isset($dp[self::ITEMS])){$dp[self::ITEMS]=array_unique(array_map(array($this,'generateKey'),(array)$dp[self::ITEMS]));}if(isset($dp[self::CONSTS])){foreach(array_unique((array)$dp[self::CONSTS])as$item){$dp[self::CALLBACKS][]=array(array(__CLASS__,'checkConst'),$item,constant($item));}unset($dp[self::CONSTS]);}if(!is_array($dp)){$dp=array();}return$dp;}function
 remove($key){$this->save($key,NULL);}function
 clean(array$conditions=NULL){$this->release();$this->storage->clean((array)$conditions);}function
-call($function){$key=func_get_args();return$this->load($key,function()use($function,$key){array_shift($key);return
-Nette\Callback::create($function)->invokeArgs($key);});}function
+call($function){$key=func_get_args();return$this->load($key,function()use($function,$key){return
+Nette\Callback::create($function)->invokeArgs(array_slice($key,1));});}function
 wrap($function,array$dependencies=NULL){$cache=$this;return
 function()use($cache,$function,$dependencies){$key=array($function,func_get_args());$data=$cache->load($key);if($data===NULL){$data=$cache->save($key,Nette\Callback::create($function)->invokeArgs($key[1]),$dependencies);}return$data;};}function
 start($key){$data=$this->load($key);if($data===NULL){return
@@ -2318,7 +2376,7 @@ offsetUnset($key){$this->save($key,NULL);}function
 release(){$this->key=$this->data=NULL;}static
 function
 checkCallbacks($callbacks){foreach($callbacks
-as$callback){$func=array_shift($callback);if(!call_user_func_array($func,$callback)){return
+as$callback){if(!call_user_func_array(array_shift($callback),$callback)){return
 FALSE;}}return
 TRUE;}private
 static
@@ -2613,12 +2671,12 @@ new
 InvalidArgumentException("Invalid callback.");}$this->cb=$cb;}function
 __invoke(){if(!is_callable($this->cb)){throw
 new
-InvalidStateException("Callback '$this' is not callable.");}$args=func_get_args();return
-call_user_func_array($this->cb,$args);}function
+InvalidStateException("Callback '$this' is not callable.");}return
+call_user_func_array($this->cb,func_get_args());}function
 invoke(){if(!is_callable($this->cb)){throw
 new
-InvalidStateException("Callback '$this' is not callable.");}$args=func_get_args();return
-call_user_func_array($this->cb,$args);}function
+InvalidStateException("Callback '$this' is not callable.");}return
+call_user_func_array($this->cb,func_get_args());}function
 invokeArgs(array$args){if(!is_callable($this->cb)){throw
 new
 InvalidStateException("Callback '$this' is not callable.");}return
@@ -2702,7 +2760,7 @@ getService($name){return
 self::getContext()->getService($name);}static
 function
 __callStatic($name,$args){if(!$args&&strncasecmp($name,'get',3)===0){return
-self::getContext()->getService(lcfirst(substr($name,3)));}else{throw
+self::getService(lcfirst(substr($name,3)));}else{throw
 new
 MemberAccessException("Call to undefined static method Nette\\Environment::$name().");}}static
 function
@@ -2726,9 +2784,9 @@ self::getContext()->getByType('Nette\Loaders\RobotLoader');}static
 function
 getCache($namespace=''){return
 new
-Caching\Cache(self::getContext()->cacheStorage,$namespace);}static
+Caching\Cache(self::getService('cacheStorage'),$namespace);}static
 function
-getSession($namespace=NULL){return$namespace===NULL?self::getContext()->session:self::getContext()->session->getSection($namespace);}static
+getSession($namespace=NULL){return$namespace===NULL?self::getService('session'):self::getService('session')->getSection($namespace);}static
 function
 loadConfig($file=NULL,$section=NULL){if(self::$createdAt){throw
 new
@@ -2740,7 +2798,7 @@ getConfig($key=NULL,$default=NULL){$params=Nette\ArrayHash::from(self::getContex
 isset($params[$key])?$params[$key]:$default;}else{return$params;}}}final
 class
 Framework{const
-NAME='Nette Framework',VERSION='2.0.10',REVISION='c0332ac released on 2013-03-08';public
+NAME='Nette Framework',VERSION='2.0.11',REVISION='dc83a21 released on 2013-07-11';public
 static$iAmUsingBadHost=FALSE;final
 function
 __construct(){throw
@@ -3006,63 +3064,7 @@ prefix($id){return
 substr_replace($id,$this->name.'.',substr($id,0,1)==='@'?1:0,0);}function
 loadConfiguration(){}function
 beforeCompile(){}function
-afterCompile(Nette\Utils\PhpGenerator\ClassType$class){}}use
-Nette\Caching\Cache;class
-Configurator
-extends
-Nette\Object{const
-AUTO=NULL,NONE=FALSE;const
-DEVELOPMENT='development',PRODUCTION='production';public$onCompile;protected$parameters;protected$files=array();function
-__construct(){$this->parameters=$this->getDefaultParameters();}function
-setDebugMode($value=TRUE){$this->parameters['debugMode']=is_bool($value)?$value:static::detectDebugMode($value);$this->parameters['productionMode']=!$this->parameters['debugMode'];return$this;}function
-isDebugMode(){return!$this->parameters['productionMode'];}function
-setTempDirectory($path){$this->parameters['tempDir']=$path;if(($cacheDir=$this->getCacheDirectory())&&!is_dir($cacheDir)){mkdir($cacheDir);}return$this;}function
-addParameters(array$params){$this->parameters=Helpers::merge($params,$this->parameters);return$this;}protected
-function
-getDefaultParameters(){$trace=debug_backtrace(FALSE);$debugMode=static::detectDebugMode();return
-array('appDir'=>isset($trace[1]['file'])?dirname($trace[1]['file']):NULL,'wwwDir'=>isset($_SERVER['SCRIPT_FILENAME'])?dirname($_SERVER['SCRIPT_FILENAME']):NULL,'debugMode'=>$debugMode,'productionMode'=>!$debugMode,'environment'=>$debugMode?'development':'production','consoleMode'=>PHP_SAPI==='cli','container'=>array('class'=>'SystemContainer','parent'=>'Nette\DI\Container'));}function
-enableDebugger($logDirectory=NULL,$email=NULL){Nette\Diagnostics\Debugger::$strictMode=TRUE;Nette\Diagnostics\Debugger::enable($this->parameters['productionMode'],$logDirectory,$email);}function
-createRobotLoader(){if(!($cacheDir=$this->getCacheDirectory())){throw
-new
-Nette\InvalidStateException("Set path to temporary directory using setTempDirectory().");}$loader=new
-Nette\Loaders\RobotLoader;$loader->setCacheStorage(new
-Nette\Caching\Storages\FileStorage($cacheDir));$loader->autoRebuild=!$this->parameters['productionMode'];return$loader;}function
-addConfig($file,$section=NULL){$this->files[]=array($file,$section===NULL?$this->parameters['environment']:$section);return$this;}function
-loadConfig($file,$section=NULL){trigger_error(__METHOD__.'() is deprecated; use addConfig(file, [section])->createContainer() instead.',E_USER_WARNING);return$this->addConfig($file,$section)->createContainer();}function
-createContainer(){if($cacheDir=$this->getCacheDirectory()){$cache=new
-Cache(new
-Nette\Caching\Storages\PhpFileStorage($cacheDir),'Nette.Configurator');$cacheKey=array($this->parameters,$this->files);$cached=$cache->load($cacheKey);if(!$cached){$code=$this->buildContainer($dependencies);$cache->save($cacheKey,$code,array(Cache::FILES=>$dependencies));$cached=$cache->load($cacheKey);}Nette\Utils\LimitedScope::load($cached['file'],TRUE);}elseif($this->files){throw
-new
-Nette\InvalidStateException("Set path to temporary directory using setTempDirectory().");}else{Nette\Utils\LimitedScope::evaluate($this->buildContainer());}$container=new$this->parameters['container']['class'];$container->initialize();Nette\Environment::setContext($container);return$container;}protected
-function
-buildContainer(&$dependencies=NULL){$loader=$this->createLoader();$config=array();$code="<?php\n";foreach($this->files
-as$tmp){list($file,$section)=$tmp;$config=Helpers::merge($loader->load($file,$section),$config);$code.="// source: $file $section\n";}$code.="\n";$this->checkCompatibility($config);if(!isset($config['parameters'])){$config['parameters']=array();}$config['parameters']=Helpers::merge($config['parameters'],$this->parameters);$compiler=$this->createCompiler();$this->onCompile($this,$compiler);$code.=$compiler->compile($config,$this->parameters['container']['class'],$config['parameters']['container']['parent']);$dependencies=array_merge($loader->getDependencies(),$this->isDebugMode()?$compiler->getContainerBuilder()->getDependencies():array());return$code;}protected
-function
-checkCompatibility(array$config){foreach(array('service'=>'services','variable'=>'parameters','variables'=>'parameters','mode'=>'parameters','const'=>'constants')as$old=>$new){if(isset($config[$old])){throw
-new
-Nette\DeprecatedException("Section '$old' in configuration file is deprecated; use '$new' instead.");}}if(isset($config['services'])){foreach($config['services']as$key=>$def){foreach(array('option'=>'arguments','methods'=>'setup')as$old=>$new){if(is_array($def)&&isset($def[$old])){throw
-new
-Nette\DeprecatedException("Section '$old' in service definition is deprecated; refactor it into '$new'.");}}}}}protected
-function
-createCompiler(){$compiler=new
-Compiler;$compiler->addExtension('php',new
-Extensions\PhpExtension)->addExtension('constants',new
-Extensions\ConstantsExtension)->addExtension('nette',new
-Extensions\NetteExtension);return$compiler;}protected
-function
-createLoader(){return
-new
-Loader;}protected
-function
-getCacheDirectory(){return
-empty($this->parameters['tempDir'])?NULL:$this->parameters['tempDir'].'/cache';}static
-function
-detectDebugMode($list=NULL){$list=is_string($list)?preg_split('#[,\s]+#',$list):(array)$list;if(!isset($_SERVER['HTTP_X_FORWARDED_FOR'])){$list[]='127.0.0.1';$list[]='::1';}return
-in_array(isset($_SERVER['REMOTE_ADDR'])?$_SERVER['REMOTE_ADDR']:php_uname('n'),$list,TRUE);}function
-setProductionMode($value=TRUE){return$this->setDebugMode(is_bool($value)?!$value:$value);}function
-isProductionMode(){return!$this->isDebugMode();}static
-function
-detectProductionMode($list=NULL){return!static::detectDebugMode($list);}}}namespace Nette\Config\Extensions{use
+afterCompile(Nette\Utils\PhpGenerator\ClassType$class){}}}namespace Nette\Config\Extensions{use
 Nette;use
 Nette\DI\ContainerBuilder;class
 ConstantsExtension
@@ -3075,10 +3077,10 @@ extends
 Nette\Config\CompilerExtension{public$defaults=array('xhtml'=>TRUE,'session'=>array('iAmUsingBadHost'=>NULL,'autoStart'=>'smart','expiration'=>NULL),'application'=>array('debugger'=>TRUE,'errorPresenter'=>NULL,'catchExceptions'=>'%productionMode%'),'routing'=>array('debugger'=>TRUE,'routes'=>array()),'security'=>array('debugger'=>TRUE,'frames'=>'SAMEORIGIN','users'=>array(),'roles'=>array(),'resources'=>array()),'mailer'=>array('smtp'=>FALSE),'database'=>array(),'forms'=>array('messages'=>array()),'container'=>array('debugger'=>FALSE),'debugger'=>array('email'=>NULL,'editor'=>NULL,'browser'=>NULL,'strictMode'=>NULL,'bar'=>array(),'blueScreen'=>array()));public$databaseDefaults=array('dsn'=>NULL,'user'=>NULL,'password'=>NULL,'options'=>NULL,'debugger'=>TRUE,'explain'=>TRUE,'reflection'=>'Nette\Database\Reflection\DiscoveredReflection');function
 loadConfiguration(){$container=$this->getContainerBuilder();$config=$this->getConfig($this->defaults);$container->addDefinition($this->prefix('cacheJournal'))->setClass('Nette\Caching\Storages\FileJournal',array('%tempDir%'));$container->addDefinition('cacheStorage')->setClass('Nette\Caching\Storages\FileStorage',array('%tempDir%/cache'));$container->addDefinition($this->prefix('templateCacheStorage'))->setClass('Nette\Caching\Storages\PhpFileStorage',array('%tempDir%/cache'))->setAutowired(FALSE);$container->addDefinition($this->prefix('cache'))->setClass('Nette\Caching\Cache',array(1=>'%namespace%'))->setParameters(array('namespace'=>NULL));$container->addDefinition($this->prefix('httpRequestFactory'))->setClass('Nette\Http\RequestFactory')->addSetup('setEncoding',array('UTF-8'))->setInternal(TRUE);$container->addDefinition('httpRequest')->setClass('Nette\Http\Request')->setFactory('@Nette\Http\RequestFactory::createHttpRequest');$container->addDefinition('httpResponse')->setClass('Nette\Http\Response');$container->addDefinition($this->prefix('httpContext'))->setClass('Nette\Http\Context');$session=$container->addDefinition('session')->setClass('Nette\Http\Session');if(isset($config['session']['expiration'])){$session->addSetup('setExpiration',array($config['session']['expiration']));}if(isset($config['session']['iAmUsingBadHost'])){$session->addSetup('Nette\Framework::$iAmUsingBadHost = ?;',array((bool)$config['session']['iAmUsingBadHost']));}unset($config['session']['expiration'],$config['session']['autoStart'],$config['session']['iAmUsingBadHost']);if(!empty($config['session'])){$session->addSetup('setOptions',array($config['session']));}$container->addDefinition($this->prefix('userStorage'))->setClass('Nette\Http\UserStorage');$user=$container->addDefinition('user')->setClass('Nette\Security\User');if(!$container->parameters['productionMode']&&$config['security']['debugger']){$user->addSetup('Nette\Diagnostics\Debugger::$bar->addPanel(?)',array(new
 Nette\DI\Statement('Nette\Security\Diagnostics\UserPanel')));}if($config['security']['users']){$container->addDefinition($this->prefix('authenticator'))->setClass('Nette\Security\SimpleAuthenticator',array($config['security']['users']));}if($config['security']['roles']||$config['security']['resources']){$authorizator=$container->addDefinition($this->prefix('authorizator'))->setClass('Nette\Security\Permission');foreach($config['security']['roles']as$role=>$parents){$authorizator->addSetup('addRole',array($role,$parents));}foreach($config['security']['resources']as$resource=>$parents){$authorizator->addSetup('addResource',array($resource,$parents));}}$application=$container->addDefinition('application')->setClass('Nette\Application\Application')->addSetup('$catchExceptions',$config['application']['catchExceptions'])->addSetup('$errorPresenter',$config['application']['errorPresenter']);if($config['application']['debugger']){$application->addSetup('Nette\Application\Diagnostics\RoutingPanel::initializePanel');}$container->addDefinition($this->prefix('presenterFactory'))->setClass('Nette\Application\PresenterFactory',array(isset($container->parameters['appDir'])?$container->parameters['appDir']:NULL));$router=$container->addDefinition('router')->setClass('Nette\Application\Routers\RouteList');foreach($config['routing']['routes']as$mask=>$action){$router->addSetup('$service[] = new Nette\Application\Routers\Route(?, ?);',array($mask,$action));}if(!$container->parameters['productionMode']&&$config['routing']['debugger']){$application->addSetup('Nette\Diagnostics\Debugger::$bar->addPanel(?)',array(new
-Nette\DI\Statement('Nette\Application\Diagnostics\RoutingPanel')));}if(empty($config['mailer']['smtp'])){$container->addDefinition($this->prefix('mailer'))->setClass('Nette\Mail\SendmailMailer');}else{$container->addDefinition($this->prefix('mailer'))->setClass('Nette\Mail\SmtpMailer',array($config['mailer']));}$container->addDefinition($this->prefix('mail'))->setClass('Nette\Mail\Message')->addSetup('setMailer')->setShared(FALSE);$container->addDefinition($this->prefix('basicForm'))->setClass('Nette\Forms\Form')->setShared(FALSE);$latte=$container->addDefinition($this->prefix('latte'))->setClass('Nette\Latte\Engine')->setShared(FALSE);if(empty($config['xhtml'])){$latte->addSetup('$service->getCompiler()->defaultContentType = ?',Nette\Latte\Compiler::CONTENT_HTML);}$container->addDefinition($this->prefix('template'))->setClass('Nette\Templating\FileTemplate')->addSetup('registerFilter',array($latte))->addSetup('registerHelperLoader',array('Nette\Templating\Helpers::loader'))->setShared(FALSE);$container->addDefinition($this->prefix('database'))->setClass('Nette\DI\NestedAccessor',array('@container',$this->prefix('database')));if(isset($config['database']['dsn'])){$config['database']=array('default'=>$config['database']);}$autowired=TRUE;foreach((array)$config['database']as$name=>$info){if(!is_array($info)){continue;}$info+=$this->databaseDefaults+array('autowired'=>$autowired);$autowired=FALSE;foreach((array)$info['options']as$key=>$value){unset($info['options'][$key]);$info['options'][constant($key)]=$value;}$connection=$container->addDefinition($this->prefix("database.$name"))->setClass('Nette\Database\Connection',array($info['dsn'],$info['user'],$info['password'],$info['options']))->setAutowired($info['autowired'])->addSetup('setCacheStorage')->addSetup('Nette\Diagnostics\Debugger::$blueScreen->addPanel(?)',array('Nette\Database\Diagnostics\ConnectionPanel::renderException'));if($info['reflection']){$connection->addSetup('setDatabaseReflection',is_string($info['reflection'])?array(new
-Nette\DI\Statement(preg_match('#^[a-z]+\z#',$info['reflection'])?'Nette\Database\Reflection\\'.ucfirst($info['reflection']).'Reflection':$info['reflection'])):Nette\Config\Compiler::filterArguments(array($info['reflection'])));}if(!$container->parameters['productionMode']&&$info['debugger']){$panel=$container->addDefinition($this->prefix("database.{$name}ConnectionPanel"))->setClass('Nette\Database\Diagnostics\ConnectionPanel')->setAutowired(FALSE)->addSetup('$explain',!empty($info['explain']))->addSetup('Nette\Diagnostics\Debugger::$bar->addPanel(?)',array('@self'));$connection->addSetup('$service->onQuery[] = ?',array(array($panel,'logQuery')));}}}function
+Nette\DI\Statement('Nette\Application\Diagnostics\RoutingPanel')));}if(empty($config['mailer']['smtp'])){$container->addDefinition($this->prefix('mailer'))->setClass('Nette\Mail\SendmailMailer');}else{$container->addDefinition($this->prefix('mailer'))->setClass('Nette\Mail\SmtpMailer',array($config['mailer']));}$container->addDefinition($this->prefix('mail'))->setClass('Nette\Mail\Message')->addSetup('setMailer')->setShared(FALSE);$container->addDefinition($this->prefix('basicForm'))->setClass('Nette\Forms\Form')->setShared(FALSE);$latte=$container->addDefinition($this->prefix('latte'))->setClass('Nette\Latte\Engine')->setShared(FALSE);if(empty($config['xhtml'])){$latte->addSetup('$service->getCompiler()->defaultContentType = ?',Nette\Latte\Compiler::CONTENT_HTML);}$container->addDefinition($this->prefix('template'))->setClass('Nette\Templating\FileTemplate')->addSetup('registerFilter',array($latte))->addSetup('registerHelperLoader',array('Nette\Templating\Helpers::loader'))->setShared(FALSE);$container->addDefinition($this->prefix('database'))->setClass('Nette\DI\NestedAccessor',array('@container',$this->prefix('database')));if(isset($config['database']['dsn'])){$config['database']=array('default'=>$config['database']);}$autowired=TRUE;foreach((array)$config['database']as$name=>$info){if(!is_array($info)){continue;}$info+=$this->databaseDefaults+array('autowired'=>$autowired);$autowired=FALSE;foreach((array)$info['options']as$key=>$value){if(preg_match('#^PDO::\w+\z#',$key)){unset($info['options'][$key]);$info['options'][constant($key)]=$value;}}$connection=$container->addDefinition($this->prefix("database.$name"))->setClass('Nette\Database\Connection',array($info['dsn'],$info['user'],$info['password'],$info['options']))->setAutowired($info['autowired'])->addSetup('setCacheStorage')->addSetup('Nette\Diagnostics\Debugger::$blueScreen->addPanel(?)',array('Nette\Database\Diagnostics\ConnectionPanel::renderException'));if($info['reflection']){$connection->addSetup('setDatabaseReflection',is_string($info['reflection'])?array(new
+Nette\DI\Statement(preg_match('#^[a-z]+\z#',$info['reflection'])?'Nette\Database\Reflection\\'.ucfirst($info['reflection']).'Reflection':$info['reflection'])):Nette\Config\Compiler::filterArguments(array($info['reflection'])));}if(!$container->parameters['productionMode']&&$info['debugger']){$panel=$container->addDefinition($this->prefix("database.{$name}ConnectionPanel"))->setClass('Nette\Database\Diagnostics\ConnectionPanel')->setAutowired(FALSE)->addSetup('$explain',!empty($info['explain']))->addSetup('$name',$name)->addSetup('Nette\Diagnostics\Debugger::$bar->addPanel(?)',array('@self'));$connection->addSetup('$service->onQuery[] = ?',array(array($panel,'logQuery')));}}}function
 afterCompile(Nette\Utils\PhpGenerator\ClassType$class){$initialize=$class->methods['initialize'];$container=$this->getContainerBuilder();$config=$this->getConfig($this->defaults);foreach(array('email','editor','browser','strictMode','maxLen','maxDepth')as$key){if(isset($config['debugger'][$key])){$initialize->addBody('Nette\Diagnostics\Debugger::$? = ?;',array($key,$config['debugger'][$key]));}}if(!$container->parameters['productionMode']){if($config['container']['debugger']){$config['debugger']['bar'][]='Nette\DI\Diagnostics\ContainerPanel';}foreach((array)$config['debugger']['bar']as$item){$initialize->addBody($container->formatPhp('Nette\Diagnostics\Debugger::$bar->addPanel(?);',Nette\Config\Compiler::filterArguments(array(is_string($item)?new
-Nette\DI\Statement($item):$item))));}foreach((array)$config['debugger']['blueScreen']as$item){$initialize->addBody($container->formatPhp('Nette\Diagnostics\Debugger::$blueScreen->addPanel(?);',Nette\Config\Compiler::filterArguments(array($item))));}}if(!empty($container->parameters['tempDir'])){$initialize->addBody($this->checkTempDir($container->expand('%tempDir%/cache')));}foreach((array)$config['forms']['messages']as$name=>$text){$initialize->addBody('Nette\Forms\Rules::$defaultMessages[Nette\Forms\Form::?] = ?;',array($name,$text));}if($config['session']['autoStart']==='smart'){$initialize->addBody('$this->session->exists() && $this->session->start();');}elseif($config['session']['autoStart']){$initialize->addBody('$this->session->start();');}if(empty($config['xhtml'])){$initialize->addBody('Nette\Utils\Html::$xhtml = ?;',array((bool)$config['xhtml']));}if(isset($config['security']['frames'])&&$config['security']['frames']!==TRUE){$frames=$config['security']['frames'];if($frames===FALSE){$frames='DENY';}elseif(preg_match('#^https?:#',$frames)){$frames="ALLOW-FROM $frames";}$initialize->addBody('header(?);',array("X-Frame-Options: $frames"));}foreach($container->findByTag('run')as$name=>$on){if($on){$initialize->addBody('$this->getService(?);',array($name));}}}private
+Nette\DI\Statement($item):$item))));}foreach((array)$config['debugger']['blueScreen']as$item){$initialize->addBody($container->formatPhp('Nette\Diagnostics\Debugger::$blueScreen->addPanel(?);',Nette\Config\Compiler::filterArguments(array($item))));}}if(!empty($container->parameters['tempDir'])){$initialize->addBody($this->checkTempDir($container->expand('%tempDir%/cache')));}foreach((array)$config['forms']['messages']as$name=>$text){$initialize->addBody('Nette\Forms\Rules::$defaultMessages[Nette\Forms\Form::?] = ?;',array($name,$text));}if($config['session']['autoStart']==='smart'){$initialize->addBody('$this->getService("session")->exists() && $this->getService("session")->start();');}elseif($config['session']['autoStart']){$initialize->addBody('$this->getService("session")->start();');}if(empty($config['xhtml'])){$initialize->addBody('Nette\Utils\Html::$xhtml = ?;',array((bool)$config['xhtml']));}if(isset($config['security']['frames'])&&$config['security']['frames']!==TRUE){$frames=$config['security']['frames'];if($frames===FALSE){$frames='DENY';}elseif(preg_match('#^https?:#',$frames)){$frames="ALLOW-FROM $frames";}$initialize->addBody('header(?);',array("X-Frame-Options: $frames"));}foreach($container->findByTag('run')as$name=>$on){if($on){$initialize->addBody('$this->getService(?);',array($name));}}}private
 function
 checkTempDir($dir){$uniq=uniqid('_',TRUE);if(!@mkdir("$dir/$uniq",0777)){throw
 new
@@ -3150,6 +3152,7 @@ exec($statement){$args=func_get_args();return$this->queryArgs(array_shift($args)
 queryArgs($statement,$params){foreach($params
 as$value){if(is_array($value)||is_object($value)){$need=TRUE;break;}}if(isset($need)&&$this->preprocessor!==NULL){list($statement,$params)=$this->preprocessor->process($statement,$params);}return$this->prepare($statement)->execute($params);}function
 fetch($args){$args=func_get_args();return$this->queryArgs(array_shift($args),$args)->fetch();}function
+fetchField($args){$args=func_get_args();return$this->queryArgs(array_shift($args),$args)->fetchField();}function
 fetchColumn($args){$args=func_get_args();return$this->queryArgs(array_shift($args),$args)->fetchColumn();}function
 fetchPairs($args){$args=func_get_args();return$this->queryArgs(array_shift($args),$args)->fetchPairs();}function
 fetchAll($args){$args=func_get_args();return$this->queryArgs(array_shift($args),$args)->fetchAll();}function
@@ -3183,14 +3186,14 @@ renderException($e){if(!$e
 instanceof\PDOException){return;}if(isset($e->queryString)){$sql=$e->queryString;}elseif($item=Nette\Diagnostics\Helpers::findTrace($e->getTrace(),'PDO::prepare')){$sql=$item['args'][0];}return
 isset($sql)?array('tab'=>'SQL','panel'=>Helpers::dumpSql($sql)):NULL;}function
 getTab(){return'<span title="Nette\\Database '.htmlSpecialChars($this->name).'">'.'<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEYSURBVBgZBcHPio5hGAfg6/2+R980k6wmJgsJ5U/ZOAqbSc2GnXOwUg7BESgLUeIQ1GSjLFnMwsKGGg1qxJRmPM97/1zXFAAAAEADdlfZzr26miup2svnelq7d2aYgt3rebl585wN6+K3I1/9fJe7O/uIePP2SypJkiRJ0vMhr55FLCA3zgIAOK9uQ4MS361ZOSX+OrTvkgINSjS/HIvhjxNNFGgQsbSmabohKDNoUGLohsls6BaiQIMSs2FYmnXdUsygQYmumy3Nhi6igwalDEOJEjPKP7CA2aFNK8Bkyy3fdNCg7r9/fW3jgpVJbDmy5+PB2IYp4MXFelQ7izPrhkPHB+P5/PjhD5gCgCenx+VR/dODEwD+A3T7nqbxwf1HAAAAAElFTkSuQmCC" />'.count($this->queries).' '.(count($this->queries)===1?'query':'queries').($this->totalTime?' / '.sprintf('%0.1f',$this->totalTime*1000).'ms':'').'</span>';}function
-getPanel(){$this->disabled=TRUE;$s='';$h='htmlSpecialChars';foreach($this->queries
-as$i=>$query){list($sql,$params,$time,$rows,$connection,$source)=$query;$explain=NULL;if($this->explain&&preg_match('#\s*\(?\s*SELECT\s#iA',$sql)){try{$cmd=is_string($this->explain)?$this->explain:'EXPLAIN';$explain=$connection->queryArgs("$cmd $sql",$params)->fetchAll();}catch(\PDOException$e){}}$s.='<tr><td>'.sprintf('%0.3f',$time*1000);if($explain){static$counter;$counter++;$s.="<br /><a href='#' class='nette-toggler' rel='#nette-DbConnectionPanel-row-$counter'>explain&nbsp;&#x25ba;</a>";}$s.='</td><td class="nette-DbConnectionPanel-sql">'.Helpers::dumpSql(self::$maxLength?Nette\Utils\Strings::truncate($sql,self::$maxLength):$sql);if($explain){$s.="<table id='nette-DbConnectionPanel-row-$counter' class='nette-collapsed'><tr>";foreach($explain[0]as$col=>$foo){$s.="<th>{$h($col)}</th>";}$s.="</tr>";foreach($explain
+getPanel(){$this->disabled=TRUE;$s='';foreach($this->queries
+as$i=>$query){list($sql,$params,$time,$rows,$connection,$source)=$query;$explain=NULL;if($this->explain&&preg_match('#\s*\(?\s*SELECT\s#iA',$sql)){try{$cmd=is_string($this->explain)?$this->explain:'EXPLAIN';$explain=$connection->queryArgs("$cmd $sql",$params)->fetchAll();}catch(\PDOException$e){}}$s.='<tr><td>'.sprintf('%0.3f',$time*1000);if($explain){static$counter;$counter++;$s.="<br /><a href='#' class='nette-toggler' rel='#nette-DbConnectionPanel-row-$counter'>explain&nbsp;&#x25ba;</a>";}$s.='</td><td class="nette-DbConnectionPanel-sql">'.Helpers::dumpSql(self::$maxLength?Nette\Utils\Strings::truncate($sql,self::$maxLength):$sql);if($explain){$s.="<table id='nette-DbConnectionPanel-row-$counter' class='nette-collapsed'><tr>";foreach($explain[0]as$col=>$foo){$s.='<th>'.htmlSpecialChars($col).'</th>';}$s.="</tr>";foreach($explain
 as$row){$s.="<tr>";foreach($row
-as$col){$s.="<td>{$h($col)}</td>";}$s.="</tr>";}$s.="</table>";}if($source){$s.=Nette\Diagnostics\Helpers::editorLink($source[0],$source[1])->class('nette-DbConnectionPanel-source');}$s.='</td><td>';foreach($params
+as$col){$s.='<td>'.htmlSpecialChars($col).'</td>';}$s.="</tr>";}$s.="</table>";}if($source){$s.=Nette\Diagnostics\Helpers::editorLink($source[0],$source[1])->class('nette-DbConnectionPanel-source');}$s.='</td><td>';foreach($params
 as$param){$s.=Debugger::dump($param,TRUE);}$s.='</td><td>'.$rows.'</td></tr>';}return
-empty($this->queries)?'':'<style> #nette-debug td.nette-DbConnectionPanel-sql { background: white !important }
+empty($this->queries)?'':'<style class="nette-debug"> #nette-debug td.nette-DbConnectionPanel-sql { background: white !important }
 			#nette-debug .nette-DbConnectionPanel-source { color: #BBB !important } </style>
-			<h1>Queries: '.count($this->queries).($this->totalTime?', time: '.sprintf('%0.3f',$this->totalTime*1000).' ms':'').'</h1>
+			<h1 title="'.htmlSpecialChars($connection->getDsn()).'">Queries: '.count($this->queries).($this->totalTime?', time: '.sprintf('%0.3f',$this->totalTime*1000).' ms':'').', '.htmlSpecialChars($this->name).'</h1>
 			<div class="nette-inner nette-DbConnectionPanel">
 			<table>
 				<tr><th>Time&nbsp;ms</th><th>SQL Statement</th><th>Params</th><th>Rows</th></tr>'.$s.'
@@ -3232,7 +3235,7 @@ Nette\Database\ISupplementalDriver{const
 ERROR_ACCESS_DENIED=1045;const
 ERROR_DUPLICATE_ENTRY=1062;const
 ERROR_DATA_TRUNCATED=1265;private$connection;function
-__construct(Nette\Database\Connection$connection,array$options){$this->connection=$connection;$charset=isset($options['charset'])?$options['charset']:'utf8';if($charset){$connection->exec("SET NAMES '$charset'");}if(isset($options['sqlmode'])){$connection->exec("SET sql_mode='$options[sqlmode]'");}$connection->exec("SET time_zone='".date('P')."'");}function
+__construct(Nette\Database\Connection$connection,array$options){$this->connection=$connection;$charset=isset($options['charset'])?$options['charset']:'utf8';if($charset){$connection->query("SET NAMES '$charset'");}if(isset($options['sqlmode'])){$connection->query("SET sql_mode='$options[sqlmode]'");}$connection->query("SET time_zone='".date('P')."'");}function
 delimite($name){return'`'.str_replace('`','``',$name).'`';}function
 formatBool($value){return$value?'1':'0';}function
 formatDateTime(\DateTime$value){return$value->format("'Y-m-d H:i:s'");}function
@@ -3399,11 +3402,12 @@ formatBool($value){return$value?'1':'0';}function
 formatDateTime(\DateTime$value){return$value->format($this->fmtDateTime);}function
 formatLike($value,$pos){$value=addcslashes(substr($this->connection->quote($value),1,-1),'%_\\');return($pos<=0?"'%":"'").$value.($pos>=0?"%'":"'")." ESCAPE '\\'";}function
 applyLimit(&$sql,$limit,$offset){if($limit>=0||$offset>0){$sql.=' LIMIT '.$limit.($offset>0?' OFFSET '.(int)$offset:'');}}function
-normalizeRow($row,$statement){return$row;}function
+normalizeRow($row,$statement){foreach($row
+as$key=>$value){unset($row[$key]);if($key[0]==='['||$key[0]==='"'){$key=substr($key,1,-1);}$row[$key]=$value;}return$row;}function
 getTables(){return$this->connection->query("
-			SELECT name, type = 'view' as view FROM sqlite_master WHERE type IN ('table', 'view')
+			SELECT name, type = 'view' as view FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
 			UNION ALL
-			SELECT name, type = 'view' as view FROM sqlite_temp_master WHERE type IN ('table', 'view')
+			SELECT name, type = 'view' as view FROM sqlite_temp_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
 			ORDER BY name
 		")->fetchAll();}function
 getColumns($table){$meta=$this->connection->query("
@@ -3427,15 +3431,12 @@ SqliteDriver{function
 formatLike($value,$pos){throw
 new
 Nette\NotSupportedException;}function
-normalizeRow($row,$statement){if(!is_object($row)){$iterator=$row;}elseif($row
-instanceof\Traversable){$iterator=iterator_to_array($row);}else{$iterator=(array)$row;}foreach($iterator
-as$key=>$value){unset($row[$key]);if($key[0]==='['||$key[0]==='"'){$key=substr($key,1,-1);}$row[$key]=$value;}return$row;}function
 getForeignKeys($table){throw
 new
 NotSupportedException;}}}namespace Nette\Database{use
 Nette;class
 Helpers{public
-static$typePatterns=array('^_'=>IReflection::FIELD_TEXT,'BYTEA|BLOB|BIN'=>IReflection::FIELD_BINARY,'TEXT|CHAR|POINT|INTERVAL'=>IReflection::FIELD_TEXT,'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT'=>IReflection::FIELD_INTEGER,'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER'=>IReflection::FIELD_FLOAT,'^TIME$'=>IReflection::FIELD_TIME,'TIME'=>IReflection::FIELD_DATETIME,'DATE'=>IReflection::FIELD_DATE,'BOOL'=>IReflection::FIELD_BOOL);static
+static$typePatterns=array('^_'=>IReflection::FIELD_TEXT,'BYTEA|BLOB|BIN'=>IReflection::FIELD_BINARY,'TEXT|CHAR|POINT|INTERVAL'=>IReflection::FIELD_TEXT,'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT|^TINY$'=>IReflection::FIELD_INTEGER,'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER'=>IReflection::FIELD_FLOAT,'^TIME$'=>IReflection::FIELD_TIME,'TIME'=>IReflection::FIELD_DATETIME,'DATE'=>IReflection::FIELD_DATE,'BOOL'=>IReflection::FIELD_BOOL);static
 function
 dumpResult(Statement$statement){echo"\n<table class=\"dump\">\n<caption>".htmlSpecialChars($statement->queryString)."</caption>\n";if(!$statement->columnCount()){echo"\t<tr>\n\t\t<th>Affected rows:</th>\n\t\t<td>",$statement->rowCount(),"</td>\n\t</tr>\n</table>\n";return;}$i=0;foreach($statement
 as$row){if($i===0){echo"<thead>\n\t<tr>\n\t\t<th>#row</th>\n";foreach($row
@@ -3449,7 +3450,7 @@ as$s=>$val){if(preg_match("#$s#i",$type)){return$cache[$type]=$val;}}}return$cac
 function
 loadFromFile(Connection$connection,$file){@set_time_limit(0);$handle=@fopen($file,'r');if(!$handle){throw
 new
-Nette\FileNotFoundException("Cannot open file '$file'.");}$count=0;$sql='';while(!feof($handle)){$s=fgets($handle);$sql.=$s;if(substr(rtrim($s),-1)===';'){$connection->exec($sql);$sql='';$count++;}}if(trim($sql)!==''){$connection->exec($sql);$count++;}fclose($handle);return$count;}}}namespace Nette\Database\Reflection{use
+Nette\FileNotFoundException("Cannot open file '$file'.");}$count=0;$sql='';while(!feof($handle)){$s=fgets($handle);$sql.=$s;if(substr(rtrim($s),-1)===';'){$connection->query($sql);$sql='';$count++;}}if(trim($sql)!==''){$connection->query($sql);$count++;}fclose($handle);return$count;}}}namespace Nette\Database\Reflection{use
 Nette;class
 ConventionalReflection
 extends
@@ -3492,7 +3493,7 @@ array($targetTable,$column);}}}if($refresh){$this->reloadForeignKeys($table);ret
 new
 MissingReferenceException("No reference found for \${$table}->{$key}.");}protected
 function
-reloadAllForeignKeys(){foreach($this->connection->getSupplementalDriver()->getTables()as$table){if($table['view']==FALSE){$this->reloadForeignKeys($table['name']);}}foreach($this->structure['hasMany']as&$table){uksort($table,function($a,$b){return
+reloadAllForeignKeys(){$this->structure['hasMany']=$this->structure['belongsTo']=array();foreach($this->connection->getSupplementalDriver()->getTables()as$table){if($table['view']==FALSE){$this->reloadForeignKeys($table['name']);}}foreach($this->structure['hasMany']as&$table){uksort($table,function($a,$b){return
 strlen($a)-strlen($b);});}}protected
 function
 reloadForeignKeys($table){foreach($this->connection->getSupplementalDriver()->getForeignKeys($table)as$row){$this->structure['belongsTo'][strtolower($table)][$row['local']]=$row['table'];$this->structure['hasMany'][strtolower($row['table'])][$row['local'].$table]=array($row['local'],$table);}if(isset($this->structure['belongsTo'][$table])){uksort($this->structure['belongsTo'][$table],function($a,$b){return
@@ -3508,10 +3509,11 @@ Nette;class
 Row
 extends
 Nette\ArrayHash{function
-__construct(Statement$statement){$statement->normalizeRow($this);}function
-offsetGet($key){if(is_int($key)){$arr=array_values((array)$this);return$arr[$key];}return$this->$key;}function
-offsetExists($key){if(is_int($key)){$arr=array_values((array)$this);return
-isset($arr[$key]);}return
+__construct(Statement$statement){$data=array();foreach($this
+as$key=>$value){$data[$key]=$value;unset($this->$key);}foreach($statement->normalizeRow($data)as$key=>$value){$this->$key=$value;}}function
+offsetGet($key){if(is_int($key)){$arr=array_slice((array)$this,$key,1);if(!$arr){trigger_error('Undefined offset: '.__CLASS__."[$key]",E_USER_NOTICE);}return
+current($arr);}return$this->$key;}function
+offsetExists($key){if(is_int($key)){return(bool)array_slice((array)$this,$key,1);}return
 parent::offsetExists($key);}}class
 SqlLiteral
 extends
@@ -3524,13 +3526,16 @@ Nette\Object{private$connection;private$driver;private$params;private$remaining;
 __construct(Connection$connection){$this->connection=$connection;$this->driver=$connection->getSupplementalDriver();}function
 process($sql,$params){$this->params=$params;$this->counter=0;$this->remaining=array();$this->arrayMode='assoc';$sql=Nette\Utils\Strings::replace($sql,'~\'.*?\'|".*?"|\?|\b(?:INSERT|REPLACE|UPDATE)\b~si',array($this,'callback'));while($this->counter<count($params)){$sql.=' '.$this->formatValue($params[$this->counter++]);}return
 array($sql,$this->remaining);}function
-callback($m){$m=$m[0];if($m[0]==="'"||$m[0]==='"'){return$m;}elseif($m==='?'){return$this->formatValue($this->params[$this->counter++]);}else{$this->arrayMode=strtoupper($m)==='UPDATE'?'assoc':'values';return$m;}}private
+callback($m){$m=$m[0];if($m[0]==="'"||$m[0]==='"'){return$m;}elseif($m==='?'){if($this->counter>=count($this->params)){throw
+new
+Nette\InvalidArgumentException('There are more placeholders than passed parameters.');}return$this->formatValue($this->params[$this->counter++]);}else{$this->arrayMode=strtoupper($m)==='UPDATE'?'assoc':'values';return$m;}}private
 function
 formatValue($value){if(is_string($value)){if(strlen($value)>20){$this->remaining[]=$value;return'?';}else{return$this->connection->quote($value);}}elseif(is_int($value)){return(string)$value;}elseif(is_float($value)){return
 rtrim(rtrim(number_format($value,10,'.',''),'0'),'.');}elseif(is_bool($value)){return$this->driver->formatBool($value);}elseif($value===NULL){return'NULL';}elseif($value
 instanceof
 Table\ActiveRow){return$value->getPrimary();}elseif(is_array($value)||$value
-instanceof\Traversable){$vx=$kx=array();if(isset($value[0])){foreach($value
+instanceof\Traversable){$vx=$kx=array();if($value
+instanceof\Traversable){$value=iterator_to_array($value);}if(isset($value[0])){foreach($value
 as$v){$vx[]=$this->formatValue($v);}return
 implode(', ',$vx);}elseif($this->arrayMode==='values'){$this->arrayMode='multi';foreach($value
 as$k=>$v){$kx[]=$this->driver->delimite($k);$vx[]=$this->formatValue($v);}return'('.implode(', ',$kx).') VALUES ('.implode(', ',$vx).')';}elseif($this->arrayMode==='assoc'){foreach($value
@@ -3547,13 +3552,17 @@ extends\PDOStatement{private$connection;private$time;private$types;protected
 function
 __construct(Connection$connection){$this->connection=$connection;$this->setFetchMode(PDO::FETCH_CLASS,'Nette\Database\Row',array($this));}function
 getConnection(){return$this->connection;}function
+getQueryString(){return$this->queryString;}function
+getColumnCount(){return$this->columnCount();}function
+getRowCount(){return$this->rowCount();}function
 execute($params=array()){static$types=array('boolean'=>PDO::PARAM_BOOL,'integer'=>PDO::PARAM_INT,'resource'=>PDO::PARAM_LOB,'NULL'=>PDO::PARAM_NULL);foreach($params
 as$key=>$value){$type=gettype($value);$this->bindValue(is_int($key)?$key+1:$key,$value,isset($types[$type])?$types[$type]:PDO::PARAM_STR);}$time=microtime(TRUE);try{parent::execute();}catch(\PDOException$e){$e->queryString=$this->queryString;throw$e;}$this->time=microtime(TRUE)-$time;$this->connection->__call('onQuery',array($this,$params));return$this;}function
 fetchPairs(){return$this->fetchAll(PDO::FETCH_KEY_PAIR);}function
+fetchField($column=0){$row=$this->fetch();return$row?$row[$column]:FALSE;}function
 normalizeRow($row){foreach($this->detectColumnTypes()as$key=>$type){$value=$row[$key];if($value===NULL||$value===FALSE||$type===IReflection::FIELD_TEXT){}elseif($type===IReflection::FIELD_INTEGER){$row[$key]=is_float($tmp=$value*1)?$value:$tmp;}elseif($type===IReflection::FIELD_FLOAT){$value=strpos($value,'.')===FALSE?$value:rtrim(rtrim($value,'0'),'.');$float=(float)$value;$row[$key]=(string)$float===$value?$float:$value;}elseif($type===IReflection::FIELD_BOOL){$row[$key]=((bool)$value)&&$value!=='f'&&$value!=='F';}elseif($type===IReflection::FIELD_DATETIME||$type===IReflection::FIELD_DATE||$type===IReflection::FIELD_TIME){$row[$key]=new
 Nette\DateTime($value);}}return$this->connection->getSupplementalDriver()->normalizeRow($row,$this);}private
 function
-detectColumnTypes(){if($this->types===NULL){$this->types=array();if($this->connection->getSupplementalDriver()->isSupported(ISupplementalDriver::SUPPORT_COLUMNS_META)){$col=0;while($meta=$this->getColumnMeta($col++)){if(isset($meta['native_type'])){$this->types[$meta['name']]=Helpers::detectType($meta['native_type']);}}}}return$this->types;}function
+detectColumnTypes(){if($this->types===NULL){$this->types=array();if($this->connection->getSupplementalDriver()->isSupported(ISupplementalDriver::SUPPORT_COLUMNS_META)){$count=$this->columnCount();for($col=0;$col<$count;$col++){$meta=$this->getColumnMeta($col);if(isset($meta['native_type'])){$this->types[$meta['name']]=Helpers::detectType($meta['native_type']);}}}}return$this->types;}function
 getTime(){return$this->time;}function
 dump(){Helpers::dumpResult($this);}static
 function
@@ -3579,7 +3588,8 @@ setTable(Selection$table){$this->table=$table;}function
 getTable(){return$this->table;}function
 __toString(){try{return(string)$this->getPrimary();}catch(\Exception$e){trigger_error("Exception in ".__METHOD__."(): {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}",E_USER_ERROR);}}function
 toArray(){$this->accessColumn(NULL);return$this->data;}function
-getPrimary($need=TRUE){$primary=$this->table->getPrimary();if(!is_array($primary)){if(isset($this->data[$primary])){return$this->data[$primary];}elseif($need){throw
+getPrimary($need=TRUE){$primary=$this->table->getPrimary($need);if($primary===NULL){return
+NULL;}elseif(!is_array($primary)){if(isset($this->data[$primary])){return$this->data[$primary];}elseif($need){throw
 new
 Nette\InvalidStateException("Row does not contain primary $primary column data.");}else{return
 NULL;}}else{$primaryVal=array();foreach($primary
@@ -3591,7 +3601,8 @@ getSignature($need=TRUE){return
 implode('|',(array)$this->getPrimary($need));}function
 ref($key,$throughColumn=NULL){if(!$throughColumn){list($key,$throughColumn)=$this->table->getConnection()->getDatabaseReflection()->getBelongsToReference($this->table->getName(),$key);}return$this->getReference($key,$throughColumn);}function
 related($key,$throughColumn=NULL){if(strpos($key,'.')!==FALSE){list($key,$throughColumn)=explode('.',$key);}elseif(!$throughColumn){list($key,$throughColumn)=$this->table->getConnection()->getDatabaseReflection()->getHasManyReference($this->table->getName(),$key);}return$this->table->getReferencingTable($key,$throughColumn,$this[$this->table->getPrimary()]);}function
-update($data=NULL){if($data===NULL){$data=$this->modified;}return$this->table->getConnection()->table($this->table->getName())->wherePrimary($this->getPrimary())->update($data);}function
+update($data=NULL){if($data
+instanceof\Traversable){$data=iterator_to_array($data);}if($data===NULL){$data=$this->modified;}return$this->table->getConnection()->table($this->table->getName())->wherePrimary($this->getPrimary())->update($data);}function
 delete(){$res=$this->table->getConnection()->table($this->table->getName())->wherePrimary($this->getPrimary())->delete();if($res>0&&($signature=$this->getSignature(FALSE))){unset($this->table[$signature]);}return$res;}function
 getIterator(){$this->accessColumn(NULL);return
 new\ArrayIterator($this->data);}function
@@ -3627,11 +3638,12 @@ __destruct(){$this->saveCacheState();}function
 __clone(){$this->sqlBuilder=clone$this->sqlBuilder;}function
 getConnection(){return$this->connection;}function
 getName(){return$this->name;}function
-getPrimary(){return$this->primary;}function
-getPrimarySequence(){if($this->primarySequence===FALSE){$this->primarySequence=NULL;$driver=$this->connection->getSupplementalDriver();if($driver->isSupported(ISupplementalDriver::SUPPORT_SEQUENCE)){foreach($driver->getColumns($this->name)as$column){if($column['name']===$this->primary){$this->primarySequence=$column['vendor']['sequence'];break;}}}}return$this->primarySequence;}function
+getPrimary($need=TRUE){if($this->primary===NULL&&$need){throw
+new\LogicException("Table \"{$this->name}\" does not have a primary key.");}return$this->primary;}function
+getPrimarySequence(){if($this->primarySequence===FALSE){$this->primarySequence=NULL;$driver=$this->connection->getSupplementalDriver();if($driver->isSupported(ISupplementalDriver::SUPPORT_SEQUENCE)&&$this->primary!==NULL){foreach($driver->getColumns($this->name)as$column){if($column['name']===$this->primary){$this->primarySequence=$column['vendor']['sequence'];break;}}}}return$this->primarySequence;}function
 setPrimarySequence($sequence){$this->primarySequence=$sequence;return$this;}function
 getSql(){return$this->sqlBuilder->buildSelectQuery($this->getPreviousAccessedColumns());}function
-getPreviousAccessedColumns(){if($this->cache&&$this->previousAccessedColumns===NULL){$this->accessedColumns=$this->previousAccessedColumns=$this->cache->load(array(__CLASS__,$this->name,$this->sqlBuilder->getConditions()));}return
+getPreviousAccessedColumns(){if($this->cache&&$this->previousAccessedColumns===NULL){$this->accessedColumns=$this->previousAccessedColumns=$this->cache->load($this->getCacheKey());}return
 array_keys(array_filter((array)$this->previousAccessedColumns));}function
 getSqlBuilder(){return$this->sqlBuilder;}function
 get($key){$clone=clone$this;return$clone->wherePrimary($key)->fetch();}function
@@ -3641,9 +3653,9 @@ as$row){$return[is_object($row[$key])?(string)$row[$key]:$row[$key]]=($value?$ro
 select($columns){$this->emptyResultSet();$this->sqlBuilder->addSelect($columns);return$this;}function
 find($key){return$this->wherePrimary($key);}function
 wherePrimary($key){if(is_array($this->primary)&&Nette\Utils\Validators::isList($key)){foreach($this->primary
-as$i=>$primary){$this->where($primary,$key[$i]);}}elseif(is_array($key)){$this->where($key);}else{$this->where($this->primary,$key);}return$this;}function
+as$i=>$primary){$this->where($primary,$key[$i]);}}elseif(is_array($key)){$this->where($key);}else{$this->where($this->getPrimary(),$key);}return$this;}function
 where($condition,$parameters=array()){if(is_array($condition)){foreach($condition
-as$key=>$val){if(is_int($key)){$this->where($val);}else{$this->where($key,$val);}}return$this;}$args=func_get_args();if(call_user_func_array(array($this->sqlBuilder,'addWhere'),$args)){$this->emptyResultSet();}return$this;}function
+as$key=>$val){if(is_int($key)){$this->where($val);}else{$this->where($key,$val);}}return$this;}if(call_user_func_array(array($this->sqlBuilder,'addWhere'),func_get_args())){$this->emptyResultSet();}return$this;}function
 order($columns){$this->emptyResultSet();$this->sqlBuilder->addOrder($columns);return$this;}function
 limit($limit,$offset=NULL){$this->emptyResultSet();$this->sqlBuilder->setLimit($limit,$offset);return$this;}function
 page($page,$itemsPerPage){return$this->limit($itemsPerPage,($page-1)*$itemsPerPage);}function
@@ -3655,7 +3667,7 @@ min($column){return$this->aggregation("MIN($column)");}function
 max($column){return$this->aggregation("MAX($column)");}function
 sum($column){return$this->aggregation("SUM($column)");}protected
 function
-execute(){if($this->rows!==NULL){return;}$this->observeCache=TRUE;try{$result=$this->query($this->getSql());}catch(\PDOException$exception){if(!$this->sqlBuilder->getSelect()&&$this->previousAccessedColumns){$this->previousAccessedColumns=FALSE;$this->accessedColumns=array();$result=$this->query($this->getSql());}else{throw$exception;}}$this->rows=array();$usedPrimary=TRUE;$result->setFetchMode(PDO::FETCH_ASSOC);foreach($result
+execute(){if($this->rows!==NULL){return;}$this->observeCache=$this;try{$result=$this->query($this->getSql());}catch(\PDOException$exception){if(!$this->sqlBuilder->getSelect()&&$this->previousAccessedColumns){$this->previousAccessedColumns=FALSE;$this->accessedColumns=array();$result=$this->query($this->getSql());}else{throw$exception;}}$this->rows=array();$usedPrimary=TRUE;$result->setFetchMode(PDO::FETCH_ASSOC);foreach($result
 as$key=>$row){$row=$this->createRow($result->normalizeRow($row));$primary=$row->getSignature(FALSE);$usedPrimary=$usedPrimary&&$primary;$this->rows[$primary?:$key]=$row;}$this->data=$this->rows;if($usedPrimary&&$this->accessedColumns!==FALSE){foreach((array)$this->primary
 as$primary){$this->accessedColumns[$primary]=TRUE;}}}protected
 function
@@ -3673,11 +3685,14 @@ GroupedSelection($this,$table,$column);}protected
 function
 query($query){return$this->connection->queryArgs($query,$this->sqlBuilder->getParameters());}protected
 function
-emptyResultSet(){if($this->rows===NULL){return;}$this->rows=NULL;$this->saveCacheState();}protected
+emptyResultSet(){$this->rows=NULL;}protected
 function
-saveCacheState(){if($this->observeCache&&$this->cache&&!$this->sqlBuilder->getSelect()&&$this->accessedColumns!=$this->previousAccessedColumns){$this->cache->save(array(__CLASS__,$this->name,$this->sqlBuilder->getConditions()),$this->accessedColumns);}}protected
+saveCacheState(){if($this->observeCache===$this&&$this->cache&&!$this->sqlBuilder->getSelect()&&$this->accessedColumns!=$this->previousAccessedColumns){$this->cache->save($this->getCacheKey(),$this->accessedColumns);}}protected
 function
-getRefTable(&$refPath){return$this;}function
+getRefTable(&$refPath){return$this;}protected
+function
+getCacheKey(){return
+md5(serialize(array(__CLASS__,$this->name,$this->sqlBuilder->getConditions())));}function
 accessColumn($key,$selectColumn=TRUE){if(!$this->cache){return;}if($key===NULL){$this->accessedColumns=FALSE;$currentKey=key($this->data);}elseif($this->accessedColumns!==FALSE){$this->accessedColumns[$key]=$selectColumn;}if($selectColumn&&!$this->sqlBuilder->getSelect()&&$this->previousAccessedColumns&&($key===NULL||!isset($this->previousAccessedColumns[$key]))){$this->previousAccessedColumns=FALSE;$this->emptyResultSet();$this->dataRefreshed=TRUE;if($key===NULL){$this->execute();while(key($this->data)!==$currentKey){next($this->data);}}}}function
 removeAccessColumn($key){if($this->cache&&is_array($this->accessedColumns)){$this->accessedColumns[$key]=FALSE;}}function
 getDataRefreshed(){return$this->dataRefreshed;}function
@@ -3693,7 +3708,7 @@ Nette\InvalidArgumentException;}if(!$data){return
 delete(){return$this->query($this->sqlBuilder->buildDeleteQuery())->rowCount();}function
 getReferencedTable($table,$column,$checkReferenced=FALSE){$referenced=&$this->getRefTable($refPath)->referenced[$refPath."$table.$column"];if($referenced===NULL||$checkReferenced||$this->checkReferenced){$this->execute();$this->checkReferenced=FALSE;$keys=array();foreach($this->rows
 as$row){if($row[$column]===NULL){continue;}$key=$row[$column]instanceof
-ActiveRow?$row[$column]->getPrimary():$row[$column];$keys[$key]=TRUE;}if($referenced!==NULL&&array_keys($keys)===array_keys($referenced->rows)){return$referenced;}if($keys){$referenced=$this->createSelectionInstance($table);$referenced->where($referenced->primary,array_keys($keys));}else{$referenced=array();}}return$referenced;}function
+ActiveRow?$row[$column]->getPrimary():$row[$column];$keys[$key]=TRUE;}if($referenced!==NULL){$a=array_keys($keys);$b=array_keys($referenced->rows);sort($a);sort($b);if($a===$b){return$referenced;}}if($keys){$referenced=$this->createSelectionInstance($table);$referenced->where($referenced->getPrimary(),array_keys($keys));}else{$referenced=array();}}return$referenced;}function
 getReferencingTable($table,$column,$active=NULL){$prototype=&$this->getRefTable($refPath)->referencingPrototype[$refPath."$table.$column"];if(!$prototype){$prototype=$this->createGroupedSelectionInstance($table,$column);$prototype->where("$table.$column",array_keys((array)$this->rows));}$clone=clone$prototype;$clone->setActive($active);return$clone;}function
 rewind(){$this->execute();$this->keys=array_keys($this->data);reset($this->keys);}function
 current(){if(($key=current($this->keys))!==FALSE){return$this->data[$key];}else{return
@@ -3723,8 +3738,8 @@ as$row){$aggregation[$row[$this->column]]=$row;}}if(isset($aggregation[$this->ac
 count($column=NULL){$return=parent::count($column);return
 isset($return)?$return:0;}protected
 function
-execute(){if($this->rows!==NULL){return;}$hash=md5($this->getSql().json_encode($this->sqlBuilder->getParameters()));$referencing=&$this->getRefTable($refPath)->referencing[$refPath.$hash];$this->rows=&$referencing['rows'];$this->referenced=&$referencing['refs'];$this->accessedColumns=&$referencing['accessed'];$refData=&$referencing['data'];if($refData===NULL){$limit=$this->sqlBuilder->getLimit();$rows=count($this->refTable->rows);if($limit&&$rows>1){$this->sqlBuilder->setLimit(NULL,NULL);}parent::execute();$this->sqlBuilder->setLimit($limit,NULL);$refData=array();$offset=array();$this->accessColumn($this->column);foreach((array)$this->rows
-as$key=>$row){$ref=&$refData[$row[$this->column]];$skip=&$offset[$row[$this->column]];if($limit===NULL||$rows<=1||(count($ref)<$limit&&$skip>=$this->sqlBuilder->getOffset())){$ref[$key]=$row;}else{unset($this->rows[$key]);}$skip++;unset($ref,$skip);}}$this->data=&$refData[$this->active];if($this->data===NULL){$this->data=array();}else{foreach($this->data
+execute(){if($this->rows!==NULL){$this->observeCache=$this;return;}$hash=md5($this->getSql().json_encode($this->sqlBuilder->getParameters()));$accessedColumns=$this->accessedColumns;$referencingBase=&$this->getRefTable($refPath)->referencing[$this->getCacheKey()];$referencing=&$referencingBase[$refPath.$hash];$this->rows=&$referencing['rows'];$this->referenced=&$referencing['refs'];$this->accessedColumns=&$referencing['accessed'];$this->observeCache=&$referencingBase['observeCache'];$refData=&$referencing['data'];if($refData===NULL){$this->accessedColumns=$accessedColumns;$limit=$this->sqlBuilder->getLimit();$rows=count($this->refTable->rows);if($limit&&$rows>1){$this->sqlBuilder->setLimit(NULL,NULL);}parent::execute();$this->sqlBuilder->setLimit($limit,NULL);$refData=array();$offset=array();$this->accessColumn($this->column);foreach((array)$this->rows
+as$key=>$row){$ref=&$refData[$row[$this->column]];$skip=&$offset[$row[$this->column]];if($limit===NULL||$rows<=1||(count($ref)<$limit&&$skip>=$this->sqlBuilder->getOffset())){$ref[$key]=$row;}else{unset($this->rows[$key]);}$skip++;unset($ref,$skip);}}$this->observeCache=$this;$this->data=&$refData[$this->active];if($this->data===NULL){$this->data=array();}else{foreach($this->data
 as$row){$row->setTable($this);}reset($this->data);$this->checkReferenced=TRUE;}}protected
 function
 getRefTable(&$refPath){$refObj=$this->refTable;$refPath=$this->name.'.';while($refObj
@@ -3738,7 +3753,8 @@ parent::insert($data);}function
 update($data){$builder=$this->sqlBuilder;$this->sqlBuilder=clone$this->sqlBuilder;$this->where($this->column,$this->active);$return=parent::update($data);$this->sqlBuilder=$builder;return$return;}function
 delete(){$builder=$this->sqlBuilder;$this->sqlBuilder=clone$this->sqlBuilder;$this->where($this->column,$this->active);$return=parent::delete();$this->sqlBuilder=$builder;return$return;}}use
 Nette\Database\Connection;use
-Nette\Database\IReflection;class
+Nette\Database\IReflection;use
+Nette\Database\SqlLiteral;class
 SqlBuilder
 extends
 Nette\Object{private$driver;private$driverName;protected$tableName;protected$databaseReflection;protected$delimitedTable;protected$select=array();protected$where=array();protected$conditions=array();protected$parameters=array();protected$order=array();protected$limit=NULL;protected$offset=NULL;protected$group='';protected$having='';function
@@ -3747,13 +3763,26 @@ buildInsertQuery(){return"INSERT INTO {$this->delimitedTable}";}function
 buildUpdateQuery(){return"UPDATE{$this->buildTopClause()} {$this->delimitedTable} SET ?".$this->buildConditions();}function
 buildDeleteQuery(){return"DELETE{$this->buildTopClause()} FROM {$this->delimitedTable}".$this->buildConditions();}function
 importConditions(SqlBuilder$builder){$this->where=$builder->where;$this->parameters=$builder->parameters;$this->conditions=$builder->conditions;}function
-addSelect($columns){$this->select[]=$columns;}function
+addSelect($columns){if(is_array($columns)){throw
+new
+Nette\InvalidArgumentException('Select column must be a string.');}$this->select[]=$columns;}function
 getSelect(){return$this->select;}function
 addWhere($condition,$parameters=array()){$args=func_get_args();$hash=md5(json_encode($args));if(isset($this->conditions[$hash])){return
-FALSE;}$this->conditions[$hash]=$condition;$condition=$this->removeExtraTables($condition);$condition=$this->tryDelimite($condition);if(count($args)!==2||strpbrk($condition,'?:')){if(count($args)!==2||!is_array($parameters)){$parameters=$args;array_shift($parameters);}$this->parameters=array_merge($this->parameters,$parameters);}elseif($parameters===NULL){$condition.=' IS NULL';}elseif($parameters
+FALSE;}$this->conditions[$hash]=$condition;$condition=$this->removeExtraTables($condition);$condition=$this->tryDelimite($condition);$placeholderCount=substr_count($condition,'?');if($placeholderCount>1&&count($args)===2&&is_array($parameters)){$args=$parameters;}else{array_shift($args);}$condition=trim($condition);if($placeholderCount===0&&count($args)===1){$condition.=' ?';}elseif($placeholderCount!==count($args)){throw
+new
+Nette\InvalidArgumentException('Argument count does not match placeholder count.');}$replace=NULL;$placeholderNum=0;foreach($args
+as$arg){preg_match('#(?:.*?\?.*?){'.$placeholderNum.'}(((?:&|\||^|~|\+|-|\*|/|%|\(|,|<|>|=|(?<=\W|^)(?:ALL|AND|ANY|BETWEEN|EXISTS|IN|LIKE|OR|NOT|SOME))\s*)?\?)#s',$condition,$match,PREG_OFFSET_CAPTURE);$hasOperator=($match[1][0]==='?'&&$match[1][1]===0)?TRUE:!empty($match[2][0]);if($arg===NULL){if($hasOperator){throw
+new
+Nette\InvalidArgumentException('Column operator does not accept NULL argument.');}$replace='IS NULL';}elseif($arg
 instanceof
-Selection){$clone=clone$parameters;if(!$clone->getSqlBuilder()->select){$clone->select($clone->primary);}if($this->driverName!=='mysql'){$condition.=' IN ('.$clone->getSql().')';}else{$in=array();foreach($clone
-as$row){$this->parameters[]=array_values(iterator_to_array($row));$in[]=(count($row)===1?'?':'(?)');}$condition.=' IN ('.($in?implode(', ',$in):'NULL').')';}}elseif(!is_array($parameters)){$condition.=' = ?';$this->parameters[]=$parameters;}else{if($parameters){$condition.=" IN (?)";$this->parameters[]=$parameters;}else{$condition.=" IN (NULL)";}}$this->where[]=$condition;return
+Selection){$clone=clone$arg;if(!$clone->getSqlBuilder()->select){try{$clone->select($clone->getPrimary());}catch(\LogicException$e){throw
+new
+Nette\InvalidArgumentException('Selection argument must have defined a select column.',0,$e);}}if($this->driverName!=='mysql'){$replace='IN ('.$clone->getSql().')';$this->parameters=array_merge($this->parameters,$clone->getSqlBuilder()->getParameters());}else{$parameter=array();foreach($clone
+as$row){$parameter[]=array_values(iterator_to_array($row));}if(!$parameter){$replace='IN (NULL)';}else{$replace='IN (?)';$this->parameters[]=$parameter;}}}elseif($arg
+instanceof
+SqlLiteral){$this->parameters[]=$arg;}elseif(is_array($arg)){if($hasOperator){if(trim($match[2][0])!=='IN'){throw
+new
+Nette\InvalidArgumentException('Column operator does not accept array argument.');}}else{$match[2][0]='IN ';}if(!$arg){$replace=$match[2][0].'(NULL)';}else{$replace=$match[2][0].'(?)';$this->parameters[]=array_values($arg);}}else{if($hasOperator){$replace=$match[2][0].'?';}else{$replace='= ?';}$this->parameters[]=$arg;}if($replace){$condition=substr_replace($condition,$replace,$match[1][1],strlen($match[1][0]));$replace=NULL;}if($arg!==NULL){$placeholderNum++;}}$this->where[]=$condition;return
 TRUE;}function
 getConditions(){return
 array_values($this->conditions);}function
@@ -3899,8 +3928,10 @@ new
 ServiceCreationException("Unable resolve class name for service '$name'.");}$factory[0]=$this->resolveClass($service,$recursive);if(!$factory[0]){return;}}$factory=new
 Nette\Callback($factory);if(!$factory->isCallable()){throw
 new
-Nette\InvalidStateException("Factory '$factory' is not callable.");}try{$reflection=$factory->toReflection();$def->class=preg_replace('#[|\s].*#','',$reflection->getAnnotation('return'));if($def->class&&!class_exists($def->class)&&$def->class[0]!=='\\'&&$reflection
-instanceof\ReflectionMethod){$def->class=$reflection->getDeclaringClass()->getNamespaceName().'\\'.$def->class;}}catch(\ReflectionException$e){}}elseif($service=$this->getServiceName($factory)){if(Strings::contains($service,'\\')){$def->autowired=FALSE;return$def->class=$service;}if($this->definitions[$service]->shared){$def->autowired=FALSE;}return$def->class=$this->resolveClass($service,$recursive);}else{return$def->class=$factory;}}function
+Nette\InvalidStateException("Factory '$factory' is not callable.");}try{$reflection=$factory->toReflection();}catch(\ReflectionException$e){throw
+new
+Nette\InvalidStateException("Missing factory '$factory'.");}$def->class=preg_replace('#[|\s].*#','',$reflection->getAnnotation('return'));if($def->class&&!class_exists($def->class)&&$def->class[0]!=='\\'&&$reflection
+instanceof\ReflectionMethod){$def->class=$reflection->getDeclaringClass()->getNamespaceName().'\\'.$def->class;}}elseif($service=$this->getServiceName($factory)){if(Strings::contains($service,'\\')){$def->autowired=FALSE;return$def->class=$service;}if($this->definitions[$service]->shared){$def->autowired=FALSE;}return$def->class=$this->resolveClass($service,$recursive);}else{return$def->class=$factory;}}function
 addDependency($file){$this->dependencies[$file]=TRUE;return$this;}function
 getDependencies(){unset($this->dependencies[FALSE]);return
 array_keys($this->dependencies);}function
@@ -3964,8 +3995,8 @@ getTab(){ob_start();?>
 <?php
 return
 ob_get_clean();}function
-getPanel(){$services=$this->getContainerProperty('factories');$factories=array();foreach(Nette\Reflection\ClassType::from($this->container)->getMethods()as$method){if(preg_match('#^create(Service)?(.+)\z#',$method->getName(),$m)){$name=str_replace('__','.',strtolower(substr($m[2],0,1)).substr($m[2],1));if($m[1]){$services[$name]=$method->getAnnotation('return');}elseif($method->isPublic()){$a=strrpos(".$name",'.');$factories[substr($name,0,$a).'create'.ucfirst(substr($name,$a))]=$method->getAnnotation('return');}}}ksort($services);ksort($factories);$container=$this->container;$registry=$this->getContainerProperty('registry');ob_start();?>
-<style>#nette-debug .nette-ContainerPanel .nette-inner{width:700px}#nette-debug .nette-ContainerPanel table{width:100%;white-space:nowrap}#nette-debug .nette-ContainerPanel-parameters pre{background:#FDF5CE;padding:.4em .7em;border:1px dotted silver;overflow:auto}#nette-debug .nette-ContainerPanel .created{font-weight:bold}#nette-debug .nette-ContainerPanel .yes{color:green;font-weight:bold}</style>
+getPanel(){$services=$this->getContainerProperty('factories');$factories=array();foreach(Nette\Reflection\ClassType::from($this->container)->getMethods()as$method){if(preg_match('#^create(Service)?_*(.+)\z#',$method->getName(),$m)){$name=str_replace('__','.',strtolower(substr($m[2],0,1)).substr($m[2],1));if($m[1]){$services[$name]=$method->getAnnotation('return');}elseif($method->isPublic()){$a=strrpos(".$name",'.');$factories[substr($name,0,$a).'create'.ucfirst(substr($name,$a))]=$method->getAnnotation('return');}}}ksort($services);ksort($factories);$container=$this->container;$registry=$this->getContainerProperty('registry');ob_start();?>
+<style class="nette-debug">#nette-debug .nette-ContainerPanel .nette-inner{width:700px}#nette-debug .nette-ContainerPanel table{width:100%;white-space:nowrap}#nette-debug .nette-ContainerPanel-parameters pre{background:#FDF5CE;padding:.4em .7em;border:1px dotted silver;overflow:auto}#nette-debug .nette-ContainerPanel .created{font-weight:bold}#nette-debug .nette-ContainerPanel .yes{color:green;font-weight:bold}</style>
 
 <div class="nette-ContainerPanel">
 <h1><?php echo
@@ -4106,8 +4137,8 @@ setClass($class,array$args=array()){$this->class=$class;if($args){$this->setFact
 setFactory($factory,array$args=array()){$this->factory=new
 Statement($factory,$args);return$this;}function
 setArguments(array$args=array()){if($this->factory){$this->factory->arguments=$args;}else{$this->setClass($this->class,$args);}return$this;}function
-addSetup($target,$args=NULL){if(!is_array($args)){$args=func_get_args();array_shift($args);}$this->setup[]=new
-Statement($target,$args);return$this;}function
+addSetup($target,$args=NULL){$this->setup[]=new
+Statement($target,is_array($args)?$args:array_slice(func_get_args(),1));return$this;}function
 setParameters(array$params){$this->shared=$this->autowired=FALSE;$this->parameters=$params;return$this;}function
 addTag($tag,$attrs=TRUE){$this->tags[$tag]=$attrs;return$this;}function
 setAutowired($on){$this->autowired=$on;return$this;}function
@@ -4297,7 +4328,7 @@ Nette\Utils\Html?$this->prompt->value(''):(string)$option->value('')->setText($t
 as$key=>$value){if(!is_array($value)){$value=array($key=>$value);$dest=$control;}else{$dest=$control->create('optgroup')->label($this->translate($key));}foreach($value
 as$key2=>$value2){if($value2
 instanceof
-Nette\Utils\Html){$dest->add((string)$value2->selected(isset($selected[$key2])));}else{$key2=$this->useKeys?$key2:$value2;$value2=$this->translate((string)$value2);$dest->add((string)$option->value($key2)->selected(isset($selected[$key2]))->setText($value2));}}}return$control;}}class
+Nette\Utils\Html){$dest->add((string)$value2->value($key2)->selected(isset($selected[$key2])));}else{$key2=$this->useKeys?$key2:$value2;$dest->add((string)$option->value($key2)->selected(isset($selected[$key2]))->setText($this->translate((string)$value2)));}}}return$control;}}class
 MultiSelectBox
 extends
 SelectBox{function
@@ -4340,7 +4371,8 @@ class
 TextBase
 extends
 BaseControl{protected$emptyValue='';protected$filters=array();function
-setValue($value){$this->value=is_array($value)?'':(string)$value;return$this;}function
+__construct($label=NULL){parent::__construct($label);$this->addFilter($this->sanitize);}function
+setValue($value){$this->value=is_array($value)?'':str_replace("\r\n","\n",$value);return$this;}function
 getValue(){$value=$this->value;foreach($this->filters
 as$filter){$value=(string)$filter($value);}return$value===$this->translate($this->emptyValue)?'':$value;}function
 setEmptyValue($value){$this->emptyValue=(string)$value;return$this;}final
@@ -4348,8 +4380,9 @@ function
 getEmptyValue(){return$this->emptyValue;}function
 addFilter($filter){$this->filters[]=new
 Nette\Callback($filter);return$this;}function
+sanitize($value){if($this->control->maxlength){$value=Nette\Utils\Strings::substring($value,0,$this->control->maxlength);}if(strcasecmp($this->control->getName(),'input')===0){$value=Nette\Utils\Strings::trim(strtr($value,"\r\n",'  '));}return$value;}function
 getControl(){$control=parent::getControl();foreach($this->getRules()as$rule){if($rule->type===Nette\Forms\Rule::VALIDATOR&&!$rule->isNegative&&($rule->operation===Form::LENGTH||$rule->operation===Form::MAX_LENGTH)){$control->maxlength=is_array($rule->arg)?$rule->arg[1]:$rule->arg;}}if($this->emptyValue!==''){$control->data('nette-empty-value',$this->translate($this->emptyValue));}return$control;}function
-addRule($operation,$message=NULL,$arg=NULL){if($operation===Form::FLOAT){$this->addFilter(array(__CLASS__,'filterFloat'));}return
+addRule($operation,$message=NULL,$arg=NULL){if($operation===Form::FLOAT){$this->addFilter(array(__CLASS__,'filterFloat'));}elseif($operation===Form::LENGTH||$operation===Form::MAX_LENGTH){$tmp=is_array($arg)?$arg[1]:$arg;$this->control->maxlength=is_scalar($tmp)?$tmp:NULL;}return
 parent::addRule($operation,$message,$arg);}static
 function
 validateMinLength(TextBase$control,$length){return
@@ -4385,14 +4418,12 @@ str_replace(array(' ',','),array('','.'),$s);}}class
 TextArea
 extends
 TextBase{function
-__construct($label=NULL,$cols=NULL,$rows=NULL){parent::__construct($label);$this->control->setName('textarea');$this->control->cols=$cols;$this->control->rows=$rows;$this->value='';}function
+__construct($label=NULL,$cols=NULL,$rows=NULL){parent::__construct($label);$this->control->setName('textarea');$this->control->cols=$cols;$this->control->rows=$rows;}function
 getControl(){$control=parent::getControl();$control->setText($this->getValue()===''?$this->translate($this->emptyValue):$this->value);return$control;}}class
 TextInput
 extends
 TextBase{function
-__construct($label=NULL,$cols=NULL,$maxLength=NULL){parent::__construct($label);$this->control->type='text';$this->control->size=$cols;$this->control->maxlength=$maxLength;$this->addFilter($this->sanitize);$this->value='';}function
-sanitize($value){if($this->control->maxlength&&Nette\Utils\Strings::length($value)>$this->control->maxlength){$value=Nette\Utils\Strings::substring($value,0,$this->control->maxlength);}return
-Nette\Utils\Strings::trim(strtr($value,"\r\n",'  '));}function
+__construct($label=NULL,$cols=NULL,$maxLength=NULL){parent::__construct($label);$this->control->type='text';$this->control->size=$cols;$this->control->maxlength=$maxLength;}function
 setType($type){$this->control->type=$type;return$this;}function
 setPasswordMode($mode=TRUE){$this->control->type=$mode?'password':'text';return$this;}function
 getControl(){$control=parent::getControl();foreach($this->getRules()as$rule){if($rule->isNegative||$rule->type!==Nette\Forms\Rule::VALIDATOR){}elseif($rule->operation===Nette\Forms\Form::RANGE&&$control->type!=='text'){list($control->min,$control->max)=$rule->arg;}elseif($rule->operation===Nette\Forms\Form::PATTERN){$control->pattern=$rule->arg;}}if($control->type!=='password'){$control->value=$this->getValue()===''?$this->translate($this->emptyValue):$this->value;}return$control;}}use
@@ -4549,7 +4580,7 @@ Nette\Callback($op);}}static
 function
 formatMessage($rule,$withValue){$message=$rule->message;if($message
 instanceof
-Nette\Utils\Html){return$message;}if(!isset($message)){$message=static::$defaultMessages[$rule->operation];}if($translator=$rule->control->getForm()->getTranslator()){$message=$translator->translate($message,is_int($rule->arg)?$rule->arg:NULL);}$message=vsprintf(preg_replace('#%(name|label|value)#','%$0',$message),(array)$rule->arg);$message=str_replace('%name',$rule->control->getName(),$message);$message=str_replace('%label',$rule->control->translate($rule->control->caption),$message);if($withValue&&strpos($message,'%value')!==FALSE){$message=str_replace('%value',$rule->control->getValue(),$message);}return$message;}}}namespace Nette\Http{use
+Nette\Utils\Html){return$message;}if($message==NULL){trigger_error("Missing validation message for control '{$rule->control->name}'.",E_USER_WARNING);}if($translator=$rule->control->getForm()->getTranslator()){$message=$translator->translate($message,is_int($rule->arg)?$rule->arg:NULL);}$message=vsprintf(preg_replace('#%(name|label|value)#','%$0',$message),(array)$rule->arg);$message=str_replace('%name',$rule->control->getName(),$message);$message=str_replace('%label',$rule->control->translate($rule->control->caption),$message);if($withValue&&strpos($message,'%value')!==FALSE){$message=str_replace('%value',$rule->control->getValue(),$message);}return$message;}}}namespace Nette\Http{use
 Nette;class
 Context
 extends
@@ -4598,8 +4629,8 @@ getQuery($key=NULL,$default=NULL){if(func_num_args()===0){return$this->query;}el
 function
 getPost($key=NULL,$default=NULL){if(func_num_args()===0){return$this->post;}elseif(isset($this->post[$key])){return$this->post[$key];}else{return$default;}}final
 function
-getFile($key){$args=func_get_args();return
-Nette\Utils\Arrays::get($this->files,$args,NULL);}final
+getFile($key){return
+Nette\Utils\Arrays::get($this->files,func_get_args(),NULL);}final
 function
 getFiles(){return$this->files;}final
 function
@@ -4680,7 +4711,7 @@ Nette\Object{const
 DEFAULT_FILE_LIFETIME=10800;private$regenerated;private
 static$started;private$options=array('referer_check'=>'','use_cookies'=>1,'use_only_cookies'=>1,'use_trans_sid'=>0,'cookie_lifetime'=>0,'cookie_path'=>'/','cookie_domain'=>'','cookie_secure'=>FALSE,'cookie_httponly'=>TRUE,'gc_maxlifetime'=>self::DEFAULT_FILE_LIFETIME,'cache_limiter'=>NULL,'cache_expire'=>NULL,'hash_function'=>NULL,'hash_bits_per_character'=>NULL);private$request;private$response;function
 __construct(IRequest$request,IResponse$response){$this->request=$request;$this->response=$response;}function
-start(){if(self::$started){return;}$this->configure($this->options);$id=&$_COOKIE[session_name()];if(!is_string($id)||!preg_match('#^[0-9a-zA-Z,-]{22,128}\z#i',$id)){unset($_COOKIE[session_name()]);}set_error_handler(function($severity,$message)use(&$error){if(($severity&error_reporting())===$severity){$error=$message;restore_error_handler();}});session_start();$this->response->removeDuplicateCookies();restore_error_handler();if($error&&!session_id()){@session_write_close();throw
+start(){if(self::$started){return;}$this->configure($this->options);$id=&$_COOKIE[session_name()];if(!is_string($id)||!preg_match('#^[0-9a-zA-Z,-]{22,128}\z#i',$id)){unset($_COOKIE[session_name()]);}set_error_handler(function($severity,$message)use(&$error){if(($severity&error_reporting())===$severity){$error=$message;restore_error_handler();}});session_start();if(!$error){restore_error_handler();}$this->response->removeDuplicateCookies();if($error&&!session_id()){@session_write_close();throw
 new
 Nette\InvalidStateException("session_start(): $error");}self::$started=TRUE;unset($_SESSION['__NT'],$_SESSION['__NS'],$_SESSION['__NM']);$nf=&$_SESSION['__NF'];@$nf['C']++;if(empty($nf['Time'])){$nf['Time']=time();$this->regenerated=TRUE;}$browserKey=$this->request->getCookie('nette-browser');if(!$browserKey){$browserKey=Nette\Utils\Strings::random();}$browserClosed=!isset($nf['B'])||$nf['B']!==$browserKey;$nf['B']=$browserKey;$this->sendCookie();if(isset($nf['META'])){$now=time();foreach($nf['META']as$section=>$metadata){if(is_array($metadata)){foreach($metadata
 as$variable=>$value){if((!empty($value['B'])&&$browserClosed)||(!empty($value['T'])&&$now>$value['T'])||(isset($nf['DATA'][$section][$variable])&&is_object($nf['DATA'][$section][$variable])&&(isset($value['V'])?$value['V']:NULL)!=Nette\Reflection\ClassType::from($nf['DATA'][$section][$variable])->getAnnotation('serializationVersion'))){if($variable===''){unset($nf['META'][$section],$nf['DATA'][$section]);continue
@@ -4709,7 +4740,7 @@ hasSection($section){if($this->exists()&&!self::$started){$this->start();}return
 getIterator(){if($this->exists()&&!self::$started){$this->start();}if(isset($_SESSION['__NF']['DATA'])){return
 new\ArrayIterator(array_keys($_SESSION['__NF']['DATA']));}else{return
 new\ArrayIterator;}}function
-clean(){if(!self::$started||empty($_SESSION)){return;}$nf=&$_SESSION['__NF'];if(isset($nf['META'])&&is_array($nf['META'])){foreach($nf['META']as$name=>$foo){if(empty($nf['META'][$name])){unset($nf['META'][$name]);}}}if(empty($nf['META'])){unset($nf['META']);}if(empty($nf['DATA'])){unset($nf['DATA']);}if(empty($_SESSION)){}}function
+clean(){if(!self::$started||empty($_SESSION)){return;}$nf=&$_SESSION['__NF'];if(isset($nf['META'])&&is_array($nf['META'])){foreach($nf['META']as$name=>$foo){if(empty($nf['META'][$name])){unset($nf['META'][$name]);}}}if(empty($nf['META'])){unset($nf['META']);}if(empty($nf['DATA'])){unset($nf['DATA']);}}function
 setOptions(array$options){if(self::$started){$this->configure($options);}$this->options=$options+$this->options;if(!empty($options['auto_start'])){$this->start();}return$this;}function
 getOptions(){return$this->options;}private
 function
@@ -4783,15 +4814,15 @@ appendQuery($value){$this->updating();$value=(string)(is_array($value)?http_buil
 getQuery(){return$this->query;}function
 setFragment($value){$this->updating();$this->fragment=(string)$value;return$this;}function
 getFragment(){return$this->fragment;}function
-getAbsoluteUrl(){return$this->scheme.'://'.$this->getAuthority().$this->path.($this->query===''?'':'?'.$this->query).($this->fragment===''?'':'#'.$this->fragment);}function
-getAuthority(){$authority=$this->host;if($this->port&&isset(self::$defaultPorts[$this->scheme])&&$this->port!==self::$defaultPorts[$this->scheme]){$authority.=':'.$this->port;}if($this->user!==''&&$this->scheme!=='http'&&$this->scheme!=='https'){$authority=$this->user.($this->pass===''?'':':'.$this->pass).'@'.$authority;}return$authority;}function
-getHostUrl(){return$this->scheme.'://'.$this->getAuthority();}function
+getAbsoluteUrl(){return$this->getHostUrl().$this->path.($this->query===''?'':'?'.$this->query).($this->fragment===''?'':'#'.$this->fragment);}function
+getAuthority(){$authority=$this->host;if($this->port&&(!isset(self::$defaultPorts[$this->scheme])||$this->port!==self::$defaultPorts[$this->scheme])){$authority.=':'.$this->port;}if($this->user!==''&&$this->scheme!=='http'&&$this->scheme!=='https'){$authority=$this->user.($this->pass===''?'':':'.$this->pass).'@'.$authority;}return$authority;}function
+getHostUrl(){return($this->scheme?$this->scheme.':':'').'//'.$this->getAuthority();}function
 getBasePath(){$pos=strrpos($this->path,'/');return$pos===FALSE?'':substr($this->path,0,$pos+1);}function
-getBaseUrl(){return$this->scheme.'://'.$this->getAuthority().$this->getBasePath();}function
+getBaseUrl(){return$this->getHostUrl().$this->getBasePath();}function
 getRelativeUrl(){return(string)substr($this->getAbsoluteUrl(),strlen($this->getBaseUrl()));}function
 isEqual($url){$part=self::unescape(strtok($url,'?#'),'%/');if(strncmp($part,'//',2)===0){if($part!=='//'.$this->getAuthority().$this->path){return
 FALSE;}}elseif(strncmp($part,'/',1)===0){if($part!==$this->path){return
-FALSE;}}else{if($part!==$this->scheme.'://'.$this->getAuthority().$this->path){return
+FALSE;}}else{if($part!==$this->getHostUrl().$this->path){return
 FALSE;}}$part=preg_split('#[&;]#',self::unescape(strtr((string)strtok('?#'),'+',' '),'%&;=+'));sort($part);$query=preg_split('#[&;]#',$this->query);sort($query);return$part===$query;}function
 canonicalize(){$this->updating();$this->path=$this->path===''?'/':self::unescape($this->path,'%/');$this->host=strtolower(rawurldecode($this->host));$this->query=self::unescape(strtr($this->query,'+',' '),'%&;=+');}function
 __toString(){return$this->getAbsoluteUrl();}static
@@ -5085,9 +5116,9 @@ extends
 MacroSet{static
 function
 install(Latte\Compiler$compiler){$me=new
-static($compiler);$me->addMacro('form','Nette\Latte\Macros\FormMacros::renderFormBegin($form = $_form = (is_object(%node.word) ? %node.word : $_control[%node.word]), %node.array)','Nette\Latte\Macros\FormMacros::renderFormEnd($_form)');$me->addMacro('label',array($me,'macroLabel'),'?></label><?php');$me->addMacro('input','$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->addAttributes(%node.array)',NULL,array($me,'macroAttrInput'));$me->addMacro('formContainer','$_formStack[] = $_form; $formContainer = $_form = (is_object(%node.word) ? %node.word : $_form[%node.word])','$_form = array_pop($_formStack)');}function
+static($compiler);$me->addMacro('form','Nette\Latte\Macros\FormMacros::renderFormBegin($form = $_form = (is_object(%node.word) ? %node.word : $_control[%node.word]), %node.array)','Nette\Latte\Macros\FormMacros::renderFormEnd($_form)');$me->addMacro('label',array($me,'macroLabel'),'?></label><?php');$me->addMacro('input','$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->addAttributes(%node.array)',NULL,array($me,'macroAttrName'));$me->addMacro('formContainer','$_formStack[] = $_form; $formContainer = $_form = (is_object(%node.word) ? %node.word : $_form[%node.word])','$_form = array_pop($_formStack)');$me->addMacro('name',NULL,NULL,array($me,'macroAttrName'));}function
 macroLabel(MacroNode$node,PhpWriter$writer){$cmd='$_input = is_object(%node.word) ? %node.word : $_form[%node.word]; if ($_label = $_input->getLabel()) echo $_label->addAttributes(%node.array)';if($node->isEmpty=(substr($node->args,-1)==='/')){$node->setArgs(substr($node->args,0,-1));return$writer->write($cmd);}else{return$writer->write($cmd.'->startTag()');}}function
-macroAttrInput(MacroNode$node,PhpWriter$writer){if($node->htmlNode->attrs){$reset=array_fill_keys(array_keys($node->htmlNode->attrs),NULL);return$writer->write('$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->addAttributes(%var)->attributes()',$reset);}return$writer->write('$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->attributes()');}static
+macroAttrName(MacroNode$node,PhpWriter$writer){if($node->htmlNode->attrs){$reset=array_fill_keys(array_keys($node->htmlNode->attrs),NULL);return$writer->write('$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->addAttributes(%var)->attributes()',$reset);}return$writer->write('$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->attributes()');}static
 function
 renderFormBegin(Form$form,array$attrs){$el=$form->getElementPrototype();$el->action=$action=(string)$el->action;$el=clone$el;if(strcasecmp($form->getMethod(),'get')===0){list($el->action)=explode('?',$action,2);if(($i=strpos($action,'#'))!==FALSE){$el->action.=substr($action,$i);}}echo$el->addAttributes($attrs)->startTag();}static
 function
@@ -5119,11 +5150,11 @@ CompileException("Cannot include $destination block outside of any block.");}$de
 macroIncludeBlock(MacroNode$node,PhpWriter$writer){return$writer->write('Nette\Latte\Macros\CoreMacros::includeTemplate(%node.word, %node.array? + get_defined_vars(), $_l->templates[%var])->render()',$this->getCompiler()->getTemplateId());}function
 macroExtends(MacroNode$node,PhpWriter$writer){if(!$node->args){throw
 new
-CompileException("Missing destination in {extends}");}if(!empty($node->parentNode)){throw
+CompileException('Missing destination in {'.$node->name.'}');}if(!empty($node->parentNode)){throw
 new
-CompileException("{extends} must be placed outside any macro.");}if($this->extends!==NULL){throw
+CompileException('{'.$node->name.'} must be placed outside any macro.');}if($this->extends!==NULL){throw
 new
-CompileException("Multiple {extends} declarations are not allowed.");}if($node->args==='none'){$this->extends='FALSE';}elseif($node->args==='auto'){$this->extends='$_presenter->findLayoutTemplateFile()';}else{$this->extends=$writer->write('%node.word%node.args');}return;}function
+CompileException('Multiple {'.$node->name.'} declarations are not allowed.');}if($node->args==='none'){$this->extends='FALSE';}elseif($node->args==='auto'){$this->extends='$_presenter->findLayoutTemplateFile()';}else{$this->extends=$writer->write('%node.word%node.args');}return;}function
 macroBlock(MacroNode$node,PhpWriter$writer){$name=$node->tokenizer->fetchWord();if($node->name==='block'&&$name===FALSE){return$node->modifiers===''?'':'ob_start()';}$node->data->name=$name=ltrim($name,'#');if($name==NULL){if($node->name!=='snippet'){throw
 new
 CompileException("Missing block name.");}}elseif(Strings::contains($name,'$')){if($node->name==='snippet'){for($parent=$node->parentNode;$parent&&$parent->name!=='snippet';$parent=$parent->parentNode);if(!$parent){throw
@@ -5172,12 +5203,12 @@ createToken($value,$type=NULL,$line=NULL){return
 array('value'=>$value,'type'=>$type,'line'=>$line);}function
 getOffset($i){$tokens=Strings::split($this->input,$this->re,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_OFFSET_CAPTURE);$offset=isset($tokens[$i])?$tokens[$i][1]:strlen($this->input);return
 array($offset,($offset?substr_count($this->input,"\n",0,$offset)+1:1),$offset-strrpos(substr($this->input,0,$offset),"\n"));}function
-fetch(){$args=func_get_args();return$this->scan($args,TRUE);}function
-fetchToken(){$args=func_get_args();return$this->scan($args,TRUE)===FALSE?FALSE:$this->current;}function
-fetchAll(){$args=func_get_args();return$this->scan($args,FALSE);}function
-fetchUntil($arg){$args=func_get_args();return$this->scan($args,FALSE,TRUE,TRUE);}function
-isNext($arg){$args=func_get_args();return(bool)$this->scan($args,TRUE,FALSE);}function
-isPrev($arg){$args=func_get_args();return(bool)$this->scan($args,TRUE,FALSE,FALSE,TRUE);}function
+fetch(){return$this->scan(func_get_args(),TRUE);}function
+fetchToken(){return$this->scan(func_get_args(),TRUE)===FALSE?FALSE:$this->current;}function
+fetchAll(){return$this->scan(func_get_args(),FALSE);}function
+fetchUntil($arg){return$this->scan(func_get_args(),FALSE,TRUE,TRUE);}function
+isNext($arg){return(bool)$this->scan(func_get_args(),TRUE,FALSE);}function
+isPrev($arg){return(bool)$this->scan(func_get_args(),TRUE,FALSE,FALSE,TRUE);}function
 hasNext(){return
 isset($this->tokens[$this->position]);}function
 hasPrev(){return$this->position>1;}function
@@ -5260,8 +5291,8 @@ parseMacroTag($tag){$match=Strings::match($tag,'~^
 			)(?P<args>.*?)
 			(?P<modifiers>\|[a-z](?:'.Parser::RE_STRING.'|[^\'"])*)?
 		()\z~isx');if(!$match){return
-FALSE;}if($match['name']===''){$match['name']=$match['shortname']?:'=';if(!$match['noescape']&&substr($match['shortname'],0,1)!=='/'){$match['modifiers'].='|escape';}}return
-array($match['name'],trim($match['args']),$match['modifiers']);}private
+FALSE;}$modifiers=preg_replace('#\|noescape\s?(?=\||\z)#i','',$match['modifiers'],-1,$noescape);if($match['name']===''){$match['name']=$match['shortname']?:'=';if(!$noescape&&!$match['noescape']&&substr($match['shortname'],0,1)!=='/'){$modifiers.='|escape';}}return
+array($match['name'],trim($match['args']),$modifiers);}private
 function
 addToken($type,$text){$this->output[]=$token=new
 Token;$token->type=$type;$token->text=$text;$token->line=substr_count($this->input,"\n",0,max(1,$this->offset-1))+1;return$token;}protected
@@ -5380,7 +5411,7 @@ getHeader($name){return
 isset($this->headers[$name])?$this->headers[$name]:NULL;}function
 clearHeader($name){unset($this->headers[$name]);return$this;}function
 getEncodedHeader($name){$offset=strlen($name)+2;if(!isset($this->headers[$name])){return
-NULL;}elseif(is_array($this->headers[$name])){$s='';foreach($this->headers[$name]as$email=>$name){if($name!=NULL){$s.=self::encodeHeader(strpbrk($name,'.,;<@>()[]"=?')?'"'.addcslashes($name,'"\\').'"':$name,$offset);$email=" <$email>";}$email.=',';if($s!==''&&$offset+strlen($email)>self::LINE_LENGTH){$s.=self::EOL."\t";$offset=1;}$s.=$email;$offset+=strlen($email);}return
+NULL;}elseif(is_array($this->headers[$name])){$s='';foreach($this->headers[$name]as$email=>$name){if($name!=NULL){$s.=self::encodeHeader($name,$offset,strpbrk($name,'.,;<@>()[]"=?'));$email=" <$email>";}$email.=',';if($s!==''&&$offset+strlen($email)>self::LINE_LENGTH){$s.=self::EOL."\t";$offset=1;}$s.=$email;$offset+=strlen($email);}return
 substr($s,0,-1);}elseif(preg_match('#^(\S+; (?:file)?name=)"(.*)"\z#',$this->headers[$name],$m)){$offset+=strlen($m[1]);return$m[1].'"'.self::encodeHeader($m[2],$offset).'"';}else{return
 self::encodeHeader($this->headers[$name],$offset);}}function
 getHeaders(){return$this->headers;}function
@@ -5402,7 +5433,7 @@ Nette\InvalidStateException('Unknown encoding.');}}if($this->parts){if(substr($o
 as$part){$output.='--'.$boundary.self::EOL.$part->generateMessage().self::EOL;}$output.='--'.$boundary.'--';}return$output;}private
 static
 function
-encodeHeader($s,&$offset=0){$o='';if($offset>=55){$o=self::EOL."\t";$offset=1;}if(strspn($s,"!\"#$%&\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}=? _\r\n\t")===strlen($s)&&($offset+strlen($s)<=self::LINE_LENGTH)){$offset+=strlen($s);return$o.$s;}$o.=str_replace("\n ","\n\t",substr(iconv_mime_encode(str_repeat(' ',$offset),$s,array('scheme'=>'B','input-charset'=>'UTF-8','output-charset'=>'UTF-8')),$offset+2));$offset=strlen($o)-strrpos($o,"\n");return$o;}}class
+encodeHeader($s,&$offset=0,$force=FALSE){$o='';if($offset>=55){$o=self::EOL."\t";$offset=1;}if(!$force&&strspn($s,"!\"#$%&\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}=? _\r\n\t")===strlen($s)&&($offset+strlen($s)<=self::LINE_LENGTH)){$offset+=strlen($s);return$o.$s;}$o.=str_replace("\n ","\n\t",substr(iconv_mime_encode(str_repeat(' ',$offset),$s,array('scheme'=>'B','input-charset'=>'UTF-8','output-charset'=>'UTF-8')),$offset+2));$offset=strlen($o)-strrpos($o,"\n");return$o;}}class
 Message
 extends
 MimePart{const
@@ -5424,7 +5455,7 @@ formatEmail($email,$name){if(!$name&&preg_match('#^(.+) +<(.*)>\z#',$email,$matc
 array($matches[2]=>$matches[1]);}else{return
 array($email=>$name);}}function
 setReturnPath($email){$this->setHeader('Return-Path',$email);return$this;}function
-getReturnPath(){return$this->getHeader('From');}function
+getReturnPath(){return$this->getHeader('Return-Path');}function
 setPriority($priority){$this->setHeader('X-Priority',(int)$priority);return$this;}function
 getPriority(){return$this->getHeader('X-Priority');}function
 setHtmlBody($html,$basePath=NULL){$this->html=$html;$this->basePath=$basePath;return$this;}function
@@ -5472,7 +5503,7 @@ Nette\Object
 implements
 IMailer{private$connection;private$host;private$port;private$username;private$password;private$secure;private$timeout;function
 __construct(array$options=array()){if(isset($options['host'])){$this->host=$options['host'];$this->port=isset($options['port'])?(int)$options['port']:NULL;}else{$this->host=ini_get('SMTP');$this->port=(int)ini_get('smtp_port');}$this->username=isset($options['username'])?$options['username']:'';$this->password=isset($options['password'])?$options['password']:'';$this->secure=isset($options['secure'])?$options['secure']:'';$this->timeout=isset($options['timeout'])?(int)$options['timeout']:20;if(!$this->port){$this->port=$this->secure==='ssl'?465:25;}}function
-send(Message$mail){$mail=clone$mail;$this->connect();$from=$mail->getHeader('From');if($from){$from=array_keys($from);$this->write("MAIL FROM:<$from[0]>",250);}foreach(array_merge((array)$mail->getHeader('To'),(array)$mail->getHeader('Cc'),(array)$mail->getHeader('Bcc'))as$email=>$name){$this->write("RCPT TO:<$email>",array(250,251));}$mail->setHeader('Bcc',NULL);$data=$mail->generateMessage();$this->write('DATA',354);$data=preg_replace('#^\.#m','..',$data);$this->write($data);$this->write('.',250);$this->write('QUIT',221);$this->disconnect();}private
+send(Message$mail){$mail=clone$mail;$this->connect();if(($from=$mail->getHeader('Return-Path'))||($from=key($mail->getHeader('From')))){$this->write("MAIL FROM:<$from>",250);}foreach(array_merge((array)$mail->getHeader('To'),(array)$mail->getHeader('Cc'),(array)$mail->getHeader('Bcc'))as$email=>$name){$this->write("RCPT TO:<$email>",array(250,251));}$mail->setHeader('Bcc',NULL);$data=$mail->generateMessage();$this->write('DATA',354);$data=preg_replace('#^\.#m','..',$data);$this->write($data);$this->write('.',250);$this->write('QUIT',221);$this->disconnect();}private
 function
 connect(){$this->connection=@fsockopen(($this->secure==='ssl'?'ssl://':'').$this->host,$this->port,$errno,$error,$this->timeout);if(!$this->connection){throw
 new
@@ -5727,7 +5758,7 @@ getTab(){ob_start();?>
 return
 ob_get_clean();}function
 getPanel(){ob_start();?>
-<style>#nette-debug .nette-UserPanel pre{background:#FDF5CE;padding:.4em .7em;border:1px dotted silver;overflow:auto}</style>
+<style class="nette-debug">#nette-debug .nette-UserPanel pre{background:#FDF5CE;padding:.4em .7em;border:1px dotted silver;overflow:auto}</style>
 
 <div class="nette-UserPanel">
 	<h1><?php if($this->user->isLoggedIn()):?>Logged in<?php else:?>Unlogged<?php endif?></h1>
@@ -5864,7 +5895,7 @@ function
 getStorage(){return$this->storage;}function
 login($id=NULL,$password=NULL){$this->logout(TRUE);if(!$id
 instanceof
-IIdentity){$credentials=func_get_args();$id=$this->getAuthenticator()->authenticate($credentials);}$this->storage->setIdentity($id);$this->storage->setAuthenticated(TRUE);$this->onLoggedIn($this);}final
+IIdentity){$id=$this->getAuthenticator()->authenticate(func_get_args());}$this->storage->setIdentity($id);$this->storage->setAuthenticated(TRUE);$this->onLoggedIn($this);}final
 function
 logout($clearIdentity=FALSE){if($this->isLoggedIn()){$this->onLoggedOut($this);$this->storage->setAuthenticated(FALSE);}if($clearIdentity){$this->storage->setIdentity(NULL);}}final
 function
@@ -5909,8 +5940,8 @@ Caching\Storages\PhpFileStorage){Nette\Utils\LimitedScope::load($cached['file'],
 save($file){if(file_put_contents($file,$this->__toString(TRUE))===FALSE){throw
 new
 Nette\IOException("Unable to save file '$file'.");}}function
-__toString(){$args=func_get_args();ob_start();try{$this->render();return
-ob_get_clean();}catch(\Exception$e){ob_end_clean();if($args&&$args[0]){throw$e;}else{trigger_error("Exception in ".__METHOD__."(): {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}",E_USER_ERROR);}}}function
+__toString(){ob_start();try{$this->render();return
+ob_get_clean();}catch(\Exception$e){ob_end_clean();if(func_get_args()&&func_get_arg(0)){throw$e;}else{trigger_error("Exception in ".__METHOD__."(): {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}",E_USER_ERROR);}}}function
 compile(){if(!$this->filters){$this->onPrepareFilters($this);}$code=$this->getSource();foreach($this->filters
 as$filter){$code=self::extractPhp($code,$blocks);$code=$filter($code);$code=strtr($code,$blocks);}return
 Helpers::optimizePhp($code);}function
@@ -5976,7 +6007,7 @@ Nette\Forms\Form;use
 Nette\Utils\Html;final
 class
 Helpers{private
-static$helpers=array('normalize'=>'Nette\Utils\Strings::normalize','toascii'=>'Nette\Utils\Strings::toAscii','webalize'=>'Nette\Utils\Strings::webalize','truncate'=>'Nette\Utils\Strings::truncate','lower'=>'Nette\Utils\Strings::lower','upper'=>'Nette\Utils\Strings::upper','firstupper'=>'Nette\Utils\Strings::firstUpper','capitalize'=>'Nette\Utils\Strings::capitalize','trim'=>'Nette\Utils\Strings::trim','padleft'=>'Nette\Utils\Strings::padLeft','padright'=>'Nette\Utils\Strings::padRight','reverse'=>'Nette\Utils\Strings::reverse','replacere'=>'Nette\Utils\Strings::replace','url'=>'rawurlencode','striptags'=>'strip_tags','nl2br'=>'nl2br','substr'=>'Nette\Utils\Strings::substring','repeat'=>'str_repeat','implode'=>'implode','number'=>'number_format');public
+static$helpers=array('normalize'=>'Nette\Utils\Strings::normalize','toascii'=>'Nette\Utils\Strings::toAscii','webalize'=>'Nette\Utils\Strings::webalize','truncate'=>'Nette\Utils\Strings::truncate','lower'=>'Nette\Utils\Strings::lower','upper'=>'Nette\Utils\Strings::upper','firstupper'=>'Nette\Utils\Strings::firstUpper','capitalize'=>'Nette\Utils\Strings::capitalize','trim'=>'Nette\Utils\Strings::trim','padleft'=>'Nette\Utils\Strings::padLeft','padright'=>'Nette\Utils\Strings::padRight','reverse'=>'Nette\Utils\Strings::reverse','replacere'=>'Nette\Utils\Strings::replace','url'=>'rawurlencode','striptags'=>'strip_tags','substr'=>'Nette\Utils\Strings::substring','repeat'=>'str_repeat','implode'=>'implode','number'=>'number_format');public
 static$dateFormat='%x';static
 function
 loader($helper){if(method_exists(__CLASS__,$helper)){return
@@ -5993,8 +6024,7 @@ instanceof
 Form)){return$s->__toString(TRUE);}return
 htmlSpecialChars($s,$quotes);}static
 function
-escapeHtmlComment($s){return
-str_replace('--','--><!-- ',$s);}static
+escapeHtmlComment($s){return' '.str_replace('-','- ',$s);}static
 function
 escapeXML($s){return
 htmlSpecialChars(preg_replace('#[\x00-\x08\x0B\x0C\x0E-\x1F]+#','',$s),ENT_QUOTES);}static
@@ -6038,6 +6068,9 @@ function
 dataStream($data,$type=NULL){if($type===NULL){$type=Nette\Utils\MimeTypeDetector::fromString($data);}return'data:'.($type?"$type;":'').'base64,'.base64_encode($data);}static
 function
 null($value){return'';}static
+function
+nl2br($value){return
+nl2br($value,Html::$xhtml);}static
 function
 optimizePhp($source,$lineLength=80,$existenceOfThisParameterSolvesDamnBugInPHP535=NULL){$res=$php='';$lastChar=';';$tokens=new\ArrayIterator(token_get_all($source));foreach($tokens
 as$key=>$token){if(is_array($token)){if($token[0]===T_INLINE_HTML){$lastChar='';$res.=$token[1];}elseif($token[0]===T_CLOSE_TAG){$next=isset($tokens[$key+1])?$tokens[$key+1]:NULL;if(substr($res,-1)!=='<'&&preg_match('#^<\?php\s*\z#',$php)){$php='';}elseif(is_array($next)&&$next[0]===T_OPEN_TAG){if(!strspn($lastChar,';{}:/')){$php.=$lastChar=';';}if(substr($next[1],-1)==="\n"){$php.="\n";}$tokens->next();}elseif($next){$res.=preg_replace('#;?(\s)*\z#','$1',$php).$token[1];if(strlen($res)-strrpos($res,"\n")>$lineLength&&(!is_array($next)||strpos($next[1],"\n")===FALSE)){$res.="\n";}$php='';}else{if(!strspn($lastChar,'};')){$php.=';';}}}elseif($token[0]===T_ELSE||$token[0]===T_ELSEIF){if($tokens[$key+1]===':'&&$lastChar==='}'){$php.=';';}$lastChar='';$php.=$token[1];}else{if(!in_array($token[0],array(T_WHITESPACE,T_COMMENT,T_DOC_COMMENT,T_OPEN_TAG))){$lastChar='';}$php.=$token[1];}}else{$php.=$lastChar=$token;}}return$res.$php;}}}namespace Nette\Utils{use
@@ -6130,9 +6163,9 @@ new
 Nette\InvalidArgumentException('Invalid date predicate format.');}list(,$operator,$date)=$matches;$operator=$operator?$operator:'=';}$date=Nette\DateTime::from($date)->format('U');return$this->filter(function($file)use($operator,$date){return
 Finder::compare($file->getMTime(),$operator,$date);});}static
 function
-compare($l,$operator,$r){switch($operator){case'>':return$l>$r;case'>=':return$l>=$r;case'<':return$l<$r;case'<=':return$l<=$r;case'=':case'==':return$l==$r;case'!':case'!=':case'<>':return$l!=$r;}throw
+compare($l,$operator,$r){switch($operator){case'>':return$l>$r;case'>=':return$l>=$r;case'<':return$l<$r;case'<=':return$l<=$r;case'=':case'==':return$l==$r;case'!':case'!=':case'<>':return$l!=$r;default:throw
 new
-Nette\InvalidArgumentException("Unknown operator $operator.");}}if(PHP_VERSION_ID<50301){class
+Nette\InvalidArgumentException("Unknown operator $operator.");}}}if(PHP_VERSION_ID<50301){class
 RecursiveDirectoryIteratorFixed
 extends\RecursiveDirectoryIterator{function
 hasChildren(){return
@@ -6140,7 +6173,7 @@ parent::hasChildren(TRUE);}}}final
 class
 Json{const
 FORCE_ARRAY=1;private
-static$messages=array(JSON_ERROR_DEPTH=>'The maximum stack depth has been exceeded',JSON_ERROR_STATE_MISMATCH=>'Syntax error, malformed JSON',JSON_ERROR_CTRL_CHAR=>'Unexpected control character found',JSON_ERROR_SYNTAX=>'Syntax error, malformed JSON');final
+static$messages=array(JSON_ERROR_DEPTH=>'The maximum stack depth has been exceeded',JSON_ERROR_STATE_MISMATCH=>'Syntax error, malformed JSON',JSON_ERROR_CTRL_CHAR=>'Unexpected control character found',JSON_ERROR_SYNTAX=>'Syntax error, malformed JSON',5=>'Invalid UTF-8 sequence',6=>'Recursion detected',7=>'Inf and NaN cannot be JSON encoded',8=>'Type is not supported');final
 function
 __construct(){throw
 new
@@ -6148,7 +6181,9 @@ Nette\StaticClassException;}static
 function
 encode($value){if(function_exists('ini_set')){$old=ini_set('display_errors',0);}set_error_handler(function($severity,$message){restore_error_handler();throw
 new
-JsonException($message);});$json=json_encode($value);restore_error_handler();if(isset($old)){ini_set('display_errors',$old);}return$json;}static
+JsonException($message);});$json=json_encode($value);restore_error_handler();if(isset($old)){ini_set('display_errors',$old);}if(PHP_VERSION_ID>=50300&&($error=json_last_error())){throw
+new
+JsonException(isset(static::$messages[$error])?static::$messages[$error]:'Unknown error',$error);}$json=str_replace(array("\xe2\x80\xa8","\xe2\x80\xa9"),array('\u2028','\u2029'),$json);return$json;}static
 function
 decode($json,$options=0){$json=(string)$json;$value=json_decode($json,(bool)($options&self::FORCE_ARRAY));if($value===NULL&&$json!==''&&strcasecmp($json,'null')){$error=PHP_VERSION_ID>=50300?json_last_error():0;throw
 new
@@ -6176,17 +6211,15 @@ static$patterns=array('
 			\'[^\'\n]*\' |
 			"(?: \\\\. | [^"\\\\\n] )*"
 		','
-			-(?= \s | $ ) |
-			:(?= [\s,\]})] | $ ) |
-			[,=[\]{}()]
-		','?:\#.*','\n[\t\ ]*','
-			[^#"\',=[\]{}()\x00-\x20!`]
+			(?: [^#"\',:=[\]{}()\x00-\x20!`-] | [:-][^"\',\]})\s] )
 			(?:
 				[^,:=\]})(\x00-\x20]+ |
 				:(?! [\s,\]})] | $ ) |
 				[\ \t]+ [^#,:=\]})(\x00-\x20]
 			)*
-		','?:[\t\ ]+');private
+		','
+			[,:=[\]{}()-]
+		','?:\#.*','\n[\t\ ]*','?:[\t\ ]+');private
 static$tokenizer;private
 static$brackets=array('['=>']','{'=>'}','('=>')');private$n=0;private$indentTabs;static
 function
@@ -6197,7 +6230,7 @@ NeonEntity){return
 self::encode($var->value).'('.substr(self::encode($var->attributes),1,-1).')';}if(is_object($var)){$obj=$var;$var=array();foreach($obj
 as$k=>$v){$var[$k]=$v;}}if(is_array($var)){$isList=Validators::isList($var);$s='';if($options&self::BLOCK){if(count($var)===0){return"[]";}foreach($var
 as$k=>$v){$v=self::encode($v,self::BLOCK);$s.=($isList?'-':self::encode($k).':').(Strings::contains($v,"\n")?"\n\t".str_replace("\n","\n\t",$v):' '.$v)."\n";continue;}return$s;}else{foreach($var
-as$k=>$v){$s.=($isList?'':self::encode($k).': ').self::encode($v).', ';}return($isList?'[':'{').substr($s,0,-2).($isList?']':'}');}}elseif(is_string($var)&&!is_numeric($var)&&!preg_match('~[\x00-\x1F]|^\d{4}|^(true|false|yes|no|on|off|null)\z~i',$var)&&preg_match('~^'.self::$patterns[4].'\z~x',$var)){return$var;}elseif(is_float($var)){$var=var_export($var,TRUE);return
+as$k=>$v){$s.=($isList?'':self::encode($k).': ').self::encode($v).', ';}return($isList?'[':'{').substr($s,0,-2).($isList?']':'}');}}elseif(is_string($var)&&!is_numeric($var)&&!preg_match('~[\x00-\x1F]|^\d{4}|^(true|false|yes|no|on|off|null)\z~i',$var)&&preg_match('~^'.self::$patterns[1].'\z~x',$var)){return$var;}elseif(is_float($var)){$var=var_export($var,TRUE);return
 Strings::contains($var,'.')?$var:$var.'.0';}else{return
 json_encode($var);}}static
 function
@@ -6480,9 +6513,9 @@ isInRange($value,$range){return(!isset($range[0])||$value>=$range[0])&&(!isset($
 function
 isEmail($value){$atom="[-a-z0-9!#$%&'*+/=?^_`{|}~]";$localPart="(?:\"(?:[ !\\x23-\\x5B\\x5D-\\x7E]*|\\\\[ -~])+\"|$atom+(?:\\.$atom+)*)";$alpha="a-z\x80-\xFF";$domain="[0-9$alpha](?:[-0-9$alpha]{0,61}[0-9$alpha])?";$topDomain="[$alpha][-0-9$alpha]{0,17}[$alpha]";return(bool)preg_match("(^$localPart@(?:$domain\\.)+$topDomain\\z)i",$value);}static
 function
-isUrl($value){$alpha="a-z\x80-\xFF";$domain="[0-9$alpha](?:[-0-9$alpha]{0,61}[0-9$alpha])?";$topDomain="[$alpha][-0-9$alpha]{0,17}[$alpha]";return(bool)preg_match("(^https?://(?:(?:$domain\\.)*$topDomain|\\d{1,3}\.\\d{1,3}\.\\d{1,3}\.\\d{1,3})(:\\d{1,5})?(/\\S*)?\\z)i",$value);}}class
+isUrl($value){$alpha="a-z\x80-\xFF";$domain="[0-9$alpha](?:[-0-9$alpha]{0,61}[0-9$alpha])?";$topDomain="[$alpha][-0-9$alpha]{0,17}[$alpha]";return(bool)preg_match("(^https?://(?:(?:$domain\\.)*$topDomain|\\d{1,3}\.\\d{1,3}\.\\d{1,3}\.\\d{1,3}|\[[0-9a-f:]{3,39}\])(:\\d{1,5})?(/\\S*)?\\z)i",$value);}}class
 AssertionException
-extends\Exception{}}namespace {Nette\Diagnostics\Debugger::_init();Nette\Utils\SafeStream::register();function
+extends\Exception{}}namespace {Nette\Diagnostics\Debugger::_init();Nette\Utils\SafeStream::register();class_alias('Nette\Config\Configurator','Nette\Configurator');function
 callback($callback,$m=NULL){return
 new
 Nette\Callback($callback,$m);}use
