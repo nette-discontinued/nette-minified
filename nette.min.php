@@ -1,7 +1,7 @@
 <?php //netteloader=Nette\Framework
 
 namespace {/**
- * Nette Framework (version 2.0.12 released on 2013-08-08, http://nette.org)
+ * Nette Framework (version 2.0.13 released on 2013-11-05, http://nette.org)
  *
  * Copyright (c) 2004, 2013 David Grudl (http://davidgrudl.com)
  *
@@ -9,7 +9,7 @@ namespace {/**
  * the file license.txt that was distributed with this source code.
  */
 
-error_reporting(E_ALL|E_STRICT);@set_magic_quotes_runtime(FALSE);iconv_set_encoding('internal_encoding','UTF-8');extension_loaded('mbstring')&&mb_internal_encoding('UTF-8');umask(0);@header('X-Powered-By: Nette Framework');@header('Content-Type: text/html; charset=utf-8');define('NETTE',TRUE);define('NETTE_DIR',__DIR__);define('NETTE_VERSION_ID',20012);define('NETTE_PACKAGE','5.3');}namespace Nette\Diagnostics{use
+error_reporting(E_ALL|E_STRICT);@set_magic_quotes_runtime(FALSE);iconv_set_encoding('internal_encoding','UTF-8');extension_loaded('mbstring')&&mb_internal_encoding('UTF-8');umask(0);@header('X-Powered-By: Nette Framework');@header('Content-Type: text/html; charset=utf-8');define('NETTE',TRUE);define('NETTE_DIR',__DIR__);define('NETTE_VERSION_ID',20013);define('NETTE_PACKAGE','5.3');}namespace Nette\Diagnostics{use
 Nette;interface
 IBarPanel{function
 getTab();function
@@ -492,7 +492,7 @@ Nette\FatalErrorException($message,0,$severity,$file,$line,$context,$previous));
 new
 Nette\FatalErrorException($message,0,$severity,$file,$line,$context);}elseif(($severity&error_reporting())!==$severity){return
 FALSE;}elseif(!self::$productionMode&&(is_bool(self::$strictMode)?self::$strictMode:((self::$strictMode&$severity)===$severity))){self::_exceptionHandler(new
-Nette\FatalErrorException($message,0,$severity,$file,$line,$context));}static$types=array(E_WARNING=>'Warning',E_COMPILE_WARNING=>'Warning',E_USER_WARNING=>'Warning',E_NOTICE=>'Notice',E_USER_NOTICE=>'Notice',E_STRICT=>'Strict standards',E_DEPRECATED=>'Deprecated',E_USER_DEPRECATED=>'Deprecated');$message='PHP '.(isset($types[$severity])?$types[$severity]:'Unknown error').": $message";$count=&self::$errorPanel->data["$message|$file|$line"];if($count++){return
+Nette\FatalErrorException($message,0,$severity,$file,$line,$context));}static$types=array(E_WARNING=>'Warning',E_COMPILE_WARNING=>'Warning',E_USER_WARNING=>'Warning',E_NOTICE=>'Notice',E_USER_NOTICE=>'Notice',E_STRICT=>'Strict standards',E_DEPRECATED=>'Deprecated',E_USER_DEPRECATED=>'Deprecated');$message='PHP '.(isset($types[$severity])?$types[$severity]:'Unknown error').": $message";$count=&self::$errorPanel->data["$file|$line|$message"];if($count++){return
 NULL;}elseif(self::$productionMode){self::log("$message in $file:$line",self::ERROR);return
 NULL;}else{$ok=self::fireLog(new\ErrorException($message,0,$severity,$file,$line));return!self::isHtmlMode()||(!self::$bar&&!$ok)?FALSE:NULL;}return
 FALSE;}static
@@ -1019,8 +1019,7 @@ function_exists('memory_get_peak_usage')?number_format(memory_get_peak_usage()/1
 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAIASURBVDjLpVPPaxNREJ6Vt01caH4oWk1T0ZKlGIo9RG+BUsEK4kEP/Q8qPXnpqRdPBf8A8Wahhx7FQ0GF9FJ6UksqwfTSBDGyB5HkkphC9tfb7jfbtyQQTx142byZ75v5ZnZWC4KALmICPy+2DkvKIX2f/POz83LxCL7nrz+WPNcll49DrhM9v7xdO9JW330DuXrrqkFSgig5iR2Cfv3t3gNxOnv5BwU+eZ5HuON5/PMPJZKJ+yKQfpW0S7TxdC6WJaWkyvff1LDaFRAeLZj05MHsiPTS6hua0PUqtwC5sHq9zv9RYWl+nu5cETcnJ1M0M5WlWq3GsX6/T+VymRzHDluZiGYAAsw0TQahV8uyyGq1qFgskm0bHIO/1+sx1rFtchJhArwEyIQ1Gg2WD2A6nWawHQJVDIWgIJfLhQowTIeE9D0mKAU8qPC0220afsWFQoH93W6X7yCDJ+DEBeBmsxnPIJVKxWQVUwry+XyUwBlKMKwA8jqdDhOVCqVAzQDVvXAXhOdGBFgymYwrGoZBmUyGjxCCdF0fSahaFdgoTHRxfTveMCXvWfkuE3Y+f40qhgT/nMitupzApdvT18bu+YeDQwY9Xl4aG9/d/URiMBhQq/dvZMeVghtT17lSZW9/rAKsvPa/r9Fc2dw+Pe0/xI6kM9mT5vtXy+Nw2kU/5zOGRpvuMIu0YAAAAABJRU5ErkJggg==" />variables
 <?php }elseif($this->id==='errors'&&$this->data){?>
 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAIsSURBVDjLpVNLSJQBEP7+h6uu62vLVAJDW1KQTMrINQ1vPQzq1GOpa9EppGOHLh0kCEKL7JBEhVCHihAsESyJiE4FWShGRmauu7KYiv6Pma+DGoFrBQ7MzGFmPr5vmDFIYj1mr1WYfrHPovA9VVOqbC7e/1rS9ZlrAVDYHig5WB0oPtBI0TNrUiC5yhP9jeF4X8NPcWfopoY48XT39PjjXeF0vWkZqOjd7LJYrmGasHPCCJbHwhS9/F8M4s8baid764Xi0Ilfp5voorpJfn2wwx/r3l77TwZUvR+qajXVn8PnvocYfXYH6k2ioOaCpaIdf11ivDcayyiMVudsOYqFb60gARJYHG9DbqQFmSVNjaO3K2NpAeK90ZCqtgcrjkP9aUCXp0moetDFEeRXnYCKXhm+uTW0CkBFu4JlxzZkFlbASz4CQGQVBFeEwZm8geyiMuRVntzsL3oXV+YMkvjRsydC1U+lhwZsWXgHb+oWVAEzIwvzyVlk5igsi7DymmHlHsFQR50rjl+981Jy1Fw6Gu0ObTtnU+cgs28AKgDiy+Awpj5OACBAhZ/qh2HOo6i+NeA73jUAML4/qWux8mt6NjW1w599CS9xb0mSEqQBEDAtwqALUmBaG5FV3oYPnTHMjAwetlWksyByaukxQg2wQ9FlccaK/OXA3/uAEUDp3rNIDQ1ctSk6kHh1/jRFoaL4M4snEMeD73gQx4M4PsT1IZ5AfYH68tZY7zv/ApRMY9mnuVMvAAAAAElFTkSuQmCC"
-/><span class="nette-warning"><?php echo
-array_sum($data)?> errors</span>
+/><span class="nette-warning"><?php echo$sum=array_sum($data),$sum>1?' errors':' error'?></span>
 <?php }return
 ob_get_clean();}function
 getPanel(){ob_start();$data=$this->data;if($this->id==='dumps'){?>
@@ -1057,7 +1056,7 @@ htmlspecialchars($key)?></th>
 <table>
 <?php $i=0?>
 <?php foreach($data
-as$item=>$count):list($message,$file,$line)=explode('|',$item)?>
+as$item=>$count):list($file,$line,$message)=explode('|',$item,3)?>
 <tr class="<?php echo$i++%
 2?'nette-alt':''?>">
 	<td class="nette-right"><?php echo$count?"$count\xC3\x97":''?></td>
@@ -1972,7 +1971,7 @@ addFile($name,$label=NULL){trigger_error(__METHOD__.'() is deprecated; use addUp
 Form
 extends
 Container{const
-EQUAL=':equal',IS_IN=':equal',FILLED=':filled',VALID=':valid';const
+EQUAL=':equal',IS_IN=':equal',NOT_EQUAL=':notEqual',FILLED=':filled',BLANK=':blank',REQUIRED=self::FILLED,VALID=':valid';const
 PROTECTION='Nette\Forms\Controls\HiddenField::validateEqual';const
 SUBMITTED=':submitted';const
 MIN_LENGTH=':minLength',MAX_LENGTH=':maxLength',LENGTH=':length',EMAIL=':email',URL=':url',REGEXP=':regexp',PATTERN=':pattern',INTEGER=':integer',NUMERIC=':integer',FLOAT=':float',RANGE=':range';const
@@ -2710,7 +2709,7 @@ function
 from($time){if($time
 instanceof\DateTime){return
 new
-self($time->format('Y-m-d H:i:s'),$time->getTimezone());}elseif(is_numeric($time)){if($time<=self::YEAR){$time+=time();}return
+static($time->format('Y-m-d H:i:s'),$time->getTimezone());}elseif(is_numeric($time)){if($time<=self::YEAR){$time+=time();}return
 new
 static(date('Y-m-d H:i:s',$time));}else{return
 new
@@ -2798,7 +2797,7 @@ getConfig($key=NULL,$default=NULL){$params=Nette\ArrayHash::from(self::getContex
 isset($params[$key])?$params[$key]:$default;}else{return$params;}}}final
 class
 Framework{const
-NAME='Nette Framework',VERSION='2.0.12',VERSION_ID=20012,REVISION='80a7e46 released on 2013-08-08';public
+NAME='Nette Framework',VERSION='2.0.13',VERSION_ID=20013,REVISION='695f643 released on 2013-11-05';public
 static$iAmUsingBadHost=FALSE;final
 function
 __construct(){throw
@@ -3443,7 +3442,7 @@ as$row){if($i===0){echo"<thead>\n\t<tr>\n\t\t<th>#row</th>\n";foreach($row
 as$col=>$foo){echo"\t\t<th>".htmlSpecialChars($col)."</th>\n";}echo"\t</tr>\n</thead>\n<tbody>\n";}echo"\t<tr>\n\t\t<th>",$i,"</th>\n";foreach($row
 as$col){echo"\t\t<td>",htmlSpecialChars($col),"</td>\n";}echo"\t</tr>\n";$i++;}if($i===0){echo"\t<tr>\n\t\t<td><em>empty result set</em></td>\n\t</tr>\n</table>\n";}else{echo"</tbody>\n</table>\n";}}static
 function
-dumpSql($sql){static$keywords1='SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';static$keywords2='ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|LIKE|RLIKE|REGEXP|TRUE|FALSE';$sql=" $sql ";$sql=preg_replace("#(?<=[\\s,(])($keywords1)(?=[\\s,)])#i","\n\$1",$sql);$sql=preg_replace('#[ \t]{2,}#'," ",$sql);$sql=wordwrap($sql,100);$sql=preg_replace('#([ \t]*\r?\n){2,}#',"\n",$sql);$sql=htmlSpecialChars($sql);$sql=preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is",function($matches){if(!empty($matches[1])){return'<em style="color:gray">'.$matches[1].'</em>';}elseif(!empty($matches[2])){return'<strong style="color:red">'.$matches[2].'</strong>';}elseif(!empty($matches[3])){return'<strong style="color:blue">'.$matches[3].'</strong>';}elseif(!empty($matches[4])){return'<strong style="color:green">'.$matches[4].'</strong>';}},$sql);return'<pre class="dump">'.trim($sql)."</pre>\n";}static
+dumpSql($sql){static$keywords1='SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';static$keywords2='ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE|REGEXP|TRUE|FALSE';$sql=" $sql ";$sql=preg_replace("#(?<=[\\s,(])($keywords1)(?=[\\s,)])#i","\n\$1",$sql);$sql=preg_replace('#[ \t]{2,}#'," ",$sql);$sql=wordwrap($sql,100);$sql=preg_replace('#([ \t]*\r?\n){2,}#',"\n",$sql);$sql=htmlSpecialChars($sql);$sql=preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is",function($matches){if(!empty($matches[1])){return'<em style="color:gray">'.$matches[1].'</em>';}elseif(!empty($matches[2])){return'<strong style="color:red">'.$matches[2].'</strong>';}elseif(!empty($matches[3])){return'<strong style="color:blue">'.$matches[3].'</strong>';}elseif(!empty($matches[4])){return'<strong style="color:green">'.$matches[4].'</strong>';}},$sql);return'<pre class="dump">'.trim($sql)."</pre>\n";}static
 function
 detectType($type){static$cache;if(!isset($cache[$type])){$cache[$type]='string';foreach(self::$typePatterns
 as$s=>$val){if(preg_match("#$s#i",$type)){return$cache[$type]=$val;}}}return$cache[$type];}static
@@ -3693,7 +3692,7 @@ getRefTable(&$refPath){return$this;}protected
 function
 getCacheKey(){return
 md5(serialize(array(__CLASS__,$this->name,$this->sqlBuilder->getConditions())));}function
-accessColumn($key,$selectColumn=TRUE){if(!$this->cache){return;}if($key===NULL){$this->accessedColumns=FALSE;$currentKey=key($this->data);}elseif($this->accessedColumns!==FALSE){$this->accessedColumns[$key]=$selectColumn;}if($selectColumn&&!$this->sqlBuilder->getSelect()&&$this->previousAccessedColumns&&($key===NULL||!isset($this->previousAccessedColumns[$key]))){$this->previousAccessedColumns=FALSE;$this->emptyResultSet();$this->dataRefreshed=TRUE;if($key===NULL){$this->execute();while(key($this->data)!==$currentKey){next($this->data);}}}}function
+accessColumn($key,$selectColumn=TRUE){if(!$this->cache){return;}if($key===NULL){$this->accessedColumns=FALSE;$currentKey=key((array)$this->data);}elseif($this->accessedColumns!==FALSE){$this->accessedColumns[$key]=$selectColumn;}if($selectColumn&&!$this->sqlBuilder->getSelect()&&$this->previousAccessedColumns&&($key===NULL||!isset($this->previousAccessedColumns[$key]))){$this->previousAccessedColumns=FALSE;$this->emptyResultSet();$this->dataRefreshed=TRUE;if($key===NULL){$this->execute();while(key($this->data)!==$currentKey){next($this->data);}}}}function
 removeAccessColumn($key){if($this->cache&&is_array($this->accessedColumns)){$this->accessedColumns[$key]=FALSE;}}function
 getDataRefreshed(){return$this->dataRefreshed;}function
 insert($data){if($data
@@ -3771,7 +3770,7 @@ addWhere($condition,$parameters=array()){$args=func_get_args();$hash=md5(json_en
 FALSE;}$this->conditions[$hash]=$condition;$condition=$this->removeExtraTables($condition);$condition=$this->tryDelimite($condition);$placeholderCount=substr_count($condition,'?');if($placeholderCount>1&&count($args)===2&&is_array($parameters)){$args=$parameters;}else{array_shift($args);}$condition=trim($condition);if($placeholderCount===0&&count($args)===1){$condition.=' ?';}elseif($placeholderCount!==count($args)){throw
 new
 Nette\InvalidArgumentException('Argument count does not match placeholder count.');}$replace=NULL;$placeholderNum=0;foreach($args
-as$arg){preg_match('#(?:.*?\?.*?){'.$placeholderNum.'}(((?:&|\||^|~|\+|-|\*|/|%|\(|,|<|>|=|(?<=\W|^)(?:REGEXP|ALL|AND|ANY|BETWEEN|EXISTS|IN|R?LIKE|OR|NOT|SOME))\s*)?(?:\(\?\)|\?))#s',$condition,$match,PREG_OFFSET_CAPTURE);$hasOperator=($match[1][0]==='?'&&$match[1][1]===0)?TRUE:!empty($match[2][0]);if($arg===NULL){if($hasOperator){throw
+as$arg){preg_match('#(?:.*?\?.*?){'.$placeholderNum.'}(((?:&|\||^|~|\+|-|\*|/|%|\(|,|<|>|=|(?<=\W|^)(?:REGEXP|ALL|AND|ANY|BETWEEN|EXISTS|IN|[IR]?LIKE|OR|NOT|SOME|INTERVAL))\s*)?(?:\(\?\)|\?))#s',$condition,$match,PREG_OFFSET_CAPTURE);$hasOperator=($match[1][0]==='?'&&$match[1][1]===0)?TRUE:!empty($match[2][0]);if($arg===NULL){if($hasOperator){throw
 new
 Nette\InvalidArgumentException('Column operator does not accept NULL argument.');}$replace='IS NULL';}elseif($arg
 instanceof
@@ -4246,7 +4245,11 @@ IControl?$item->value:$item)){return
 TRUE;}}}return
 FALSE;}static
 function
+validateNotEqual(IControl$control,$arg){return!static::validateEqual($control,$arg);}static
+function
 validateFilled(IControl$control){return$control->isFilled();}static
+function
+validateBlank(IControl$control){return!$control->isFilled();}static
 function
 validateValid(IControl$control){return$control->rules->validate(TRUE);}function
 addError($message){if(!in_array($message,$this->errors,TRUE)){$this->errors[]=$message;}$this->getForm()->addError($message);}function
@@ -6039,7 +6042,7 @@ instanceof
 Html||$s
 instanceof
 Form)){$s=$s->__toString(TRUE);}return
-str_replace(']]>',']]\x3E',Nette\Utils\Json::encode($s));}static
+str_replace(array(']]>','<!'),array(']]\x3E','\x3C!'),Nette\Utils\Json::encode($s));}static
 function
 escapeICal($s){return
 addcslashes(preg_replace('#[\x00-\x08\x0B\x0C-\x1F]+#','',$s),"\";\\,:\n");}static
