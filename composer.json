@@ -30,11 +30,6 @@
 		"nette/nette": "self.version"
 	},
 	"autoload": {
-		"files": ["nette.min.php"]
-	},
-	"extra": {
-		"branch-alias": {
-			"dev-master": "2.1-dev"
-		}
+		"files": ["nette.phar"]
 	}
 }
