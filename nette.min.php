@@ -1,12 +1,12 @@
 <?php //netteloader=Nette\Framework
 
 namespace {/**
- * Nette Framework (version 2.0.16 released on 2014-08-28, http://nette.org)
+ * Nette Framework (version 2.0.17 released on 2014-10-29, http://nette.org)
  *
  * Copyright (c) 2004, 2014 David Grudl (http://davidgrudl.com)
  */
 
-error_reporting(E_ALL|E_STRICT);@set_magic_quotes_runtime(FALSE);@iconv_set_encoding('internal_encoding','UTF-8');extension_loaded('mbstring')&&mb_internal_encoding('UTF-8');umask(0);@header('X-Powered-By: Nette Framework');@header('Content-Type: text/html; charset=utf-8');define('NETTE',TRUE);define('NETTE_DIR',__DIR__);define('NETTE_VERSION_ID',20016);define('NETTE_PACKAGE','5.3');}namespace Nette\Diagnostics{use
+error_reporting(E_ALL|E_STRICT);@set_magic_quotes_runtime(FALSE);@iconv_set_encoding('internal_encoding','UTF-8');extension_loaded('mbstring')&&mb_internal_encoding('UTF-8');umask(0);@header('X-Powered-By: Nette Framework');@header('Content-Type: text/html; charset=utf-8');define('NETTE',TRUE);define('NETTE_DIR',__DIR__);define('NETTE_VERSION_ID',20017);define('NETTE_PACKAGE','5.3');}namespace Nette\Diagnostics{use
 Nette;interface
 IBarPanel{function
 getTab();function
@@ -1925,7 +1925,7 @@ setMethod($method){if($this->httpData!==NULL){throw
 new
 Nette\InvalidStateException(__METHOD__.'() must be called until the form is empty.');}$this->element->method=strtolower($method);return$this;}function
 getMethod(){return$this->element->method;}function
-addProtection($message=NULL,$timeout=NULL){$session=$this->getSession()->getSection('Nette.Forms.Form/CSRF');$key="key$timeout";if(isset($session->$key)){$token=$session->$key;}else{$session->$key=$token=Nette\Utils\Strings::random();}$session->setExpiration($timeout,$key);$this[self::PROTECTOR_ID]=new
+addProtection($message=NULL,$timeout=NULL){$session=$this->getSession()->getSection('Nette.Forms.Form/CSRF');$key="key$timeout";if(isset($session->$key)){$token=$session->$key;}else{$session->$key=$token=Nette\Utils\Strings::random();}$session->setExpiration($timeout,$key);$token=base64_encode($token^$this->getSession()->getId());$this[self::PROTECTOR_ID]=new
 Controls\HiddenField($token);$this[self::PROTECTOR_ID]->addRule(self::PROTECTION,$message,$token);}function
 addGroup($caption=NULL,$setAsCurrent=TRUE){$group=new
 ControlGroup;$group->setOption('label',$caption);$group->setOption('visual',TRUE);if($setAsCurrent){$this->setCurrentGroup($group);}if(isset($this->groups[$caption])){return$this->groups[]=$group;}else{return$this->groups[$caption]=$group;}}function
@@ -2706,7 +2706,7 @@ function
 getConfig($key=NULL,$default=NULL){$params=Nette\ArrayHash::from(self::getContext()->parameters);if(func_num_args()){return
 isset($params[$key])?$params[$key]:$default;}else{return$params;}}}class
 Framework{const
-NAME='Nette Framework',VERSION='2.0.16',VERSION_ID=20016,REVISION='released on 2014-08-28';public
+NAME='Nette Framework',VERSION='2.0.17',VERSION_ID=20017,REVISION='released on 2014-10-29';public
 static$iAmUsingBadHost=FALSE;final
 function
 __construct(){throw
@@ -4430,7 +4430,7 @@ extends
 Nette\Object
 implements\IteratorAggregate{const
 VALIDATE_PREFIX='validate';public
-static$defaultMessages=array(Form::PROTECTION=>'Please submit this form again (security token has expired).',Form::EQUAL=>'Please enter %s.',Form::FILLED=>'Please complete mandatory field.',Form::MIN_LENGTH=>'Please enter a value of at least %d characters.',Form::MAX_LENGTH=>'Please enter a value no longer than %d characters.',Form::LENGTH=>'Please enter a value between %d and %d characters long.',Form::EMAIL=>'Please enter a valid email address.',Form::URL=>'Please enter a valid URL.',Form::INTEGER=>'Please enter a numeric value.',Form::FLOAT=>'Please enter a numeric value.',Form::RANGE=>'Please enter a value between %d and %d.',Form::MAX_FILE_SIZE=>'The size of the uploaded file can be up to %d bytes.',Form::IMAGE=>'The uploaded file must be image in format JPEG, GIF or PNG.',Form::MIME_TYPE=>'The uploaded file is not in the expected format.');private$rules=array();private$parent;private$toggles=array();private$control;function
+static$defaultMessages=array(Form::PROTECTION=>'Your session has expired. Please return to the home page and try again.',Form::EQUAL=>'Please enter %s.',Form::FILLED=>'Please complete mandatory field.',Form::MIN_LENGTH=>'Please enter a value of at least %d characters.',Form::MAX_LENGTH=>'Please enter a value no longer than %d characters.',Form::LENGTH=>'Please enter a value between %d and %d characters long.',Form::EMAIL=>'Please enter a valid email address.',Form::URL=>'Please enter a valid URL.',Form::INTEGER=>'Please enter a numeric value.',Form::FLOAT=>'Please enter a numeric value.',Form::RANGE=>'Please enter a value between %d and %d.',Form::MAX_FILE_SIZE=>'The size of the uploaded file can be up to %d bytes.',Form::IMAGE=>'The uploaded file must be image in format JPEG, GIF or PNG.',Form::MIME_TYPE=>'The uploaded file is not in the expected format.');private$rules=array();private$parent;private$toggles=array();private$control;function
 __construct(IControl$control){$this->control=$control;}function
 addRule($operation,$message=NULL,$arg=NULL){$rule=new
 Rule;$rule->control=$this->control;$rule->operation=$operation;$this->adjustOperation($rule);$rule->arg=$arg;$rule->type=Rule::VALIDATOR;if($message===NULL&&is_string($rule->operation)&&isset(static::$defaultMessages[$rule->operation])){$rule->message=static::$defaultMessages[$rule->operation];}else{$rule->message=$message;}$this->rules[]=$rule;return$this;}function
@@ -5356,7 +5356,7 @@ parent::generateMessage();}else{return$this->build()->generateMessage();}}protec
 function
 build(){$mail=clone$this;$mail->setHeader('Message-ID',$this->getRandomId());$mail->buildHtml();$mail->buildText();$cursor=$mail;if($mail->attachments){$tmp=$cursor->setContentType('multipart/mixed');$cursor=$cursor->addPart();foreach($mail->attachments
 as$value){$tmp->addPart($value);}}if($mail->html!=NULL){$tmp=$cursor->setContentType('multipart/alternative');$cursor=$cursor->addPart();$alt=$tmp->addPart();if($mail->inlines){$tmp=$alt->setContentType('multipart/related');$alt=$alt->addPart();foreach($mail->inlines
-as$value){$tmp->addPart($value);}}$alt->setContentType('text/html','UTF-8')->setEncoding(preg_match('#\S{990}#',$mail->html)?self::ENCODING_QUOTED_PRINTABLE:(preg_match('#[\x80-\xFF]#',$mail->html)?self::ENCODING_8BIT:self::ENCODING_7BIT))->setBody($mail->html);}$text=$mail->getBody();$mail->setBody(NULL);$cursor->setContentType('text/plain','UTF-8')->setEncoding(preg_match('#\S{990}#',$text)?self::ENCODING_QUOTED_PRINTABLE:(preg_match('#[\x80-\xFF]#',$text)?self::ENCODING_8BIT:self::ENCODING_7BIT))->setBody($text);return$mail;}protected
+as$value){$tmp->addPart($value);}}$alt->setContentType('text/html','UTF-8')->setEncoding(preg_match('#[^\n]{990}#',$mail->html)?self::ENCODING_QUOTED_PRINTABLE:(preg_match('#[\x80-\xFF]#',$mail->html)?self::ENCODING_8BIT:self::ENCODING_7BIT))->setBody($mail->html);}$text=$mail->getBody();$mail->setBody(NULL);$cursor->setContentType('text/plain','UTF-8')->setEncoding(preg_match('#[^\n]{990}#',$text)?self::ENCODING_QUOTED_PRINTABLE:(preg_match('#[\x80-\xFF]#',$text)?self::ENCODING_8BIT:self::ENCODING_7BIT))->setBody($text);return$mail;}protected
 function
 buildHtml(){if($this->html
 instanceof
@@ -5622,7 +5622,7 @@ Nette\Object
 implements
 Nette\Diagnostics\IBarPanel{private$user;function
 __construct(Nette\Security\User$user){$this->user=$user;}function
-getTab(){ob_start();?>
+getTab(){if(headers_sent()){return;}ob_start();?>
 <?php if($this->user->isLoggedIn()):?>
 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAJkSURBVDjLhVLPSxRhGH5mf8yOs9O6aa2b6BJhsW3RilAXDSW65clDdgwkEBH/gIiI6FC3uoRBQYeooP4Aw9isQ2xG5YZEVFrINmnFto67s7sz33xf76wedEfwgxdm4H1+vO/zSkIINL7Bax/PpxLRkXhUTVuMY/7Hci4z++2e/njofmNvYDvwqe726/2pcJsa9MMhgd7D4T5NUQ8GBibBZka3kPgaCZKk7IKbVT8qNodpcUToe6g33tadOjCyo4NYREkrpGyYHLYDMEfArHFoioTE/o70jgRVC3AIZDMqLogA9fKR12qVefblGWHui54rmDZCsoSaLVClUkMSVlYZZl7P53YkyGQ/T9+dWqoaFY6K5ZaDEo1w42GOVWaz7xv7pc0x9kxkh/uOxa6c6JSSnDz/MgJgFGM0ZCLALTzKrhZePnh1S+gXr3p2cHQ0kx7oSVwePtmWbNUCKFsCKb6+i3K1GXKQY2JfrCW/XJqQfGNvBL/9bMsILRF1/MzxWGo3RfbHoK3VjUkgDlhEsqDXEKJ0Lgx2tSJ56JJnB13tLf3NYR9+F20CCwJSuSnw9W8hJHxdMtHeqiAYix/xEGia0ilLPuRXKnVVx41vYwRG6XEOGGsMst8PWVF3eXZgWUyixChvCc6GMiNwja7RJjR3x3GLRFwyj4PFvPFzQTehNUn1f4e6LIfXCdxDovGR2BvEh+9lVArFNQ/BdCY/Pjq5eGfqbQGC1IPkpEkGwnREMvl09/DkxQpuPs0beDd3ets7cF/HuefL8ViU7YnIYbpcTS+Y0P9apXLe+IeSWRSfzvZs7v8PV6U0ly704DwAAAAASUVORK5CYII=" style="margin-right:0" />&nbsp;
 <?php else:?>
