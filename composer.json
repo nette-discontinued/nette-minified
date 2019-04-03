@@ -1,0 +1,41 @@
+{
+	"name": "nette/nette-minified",
+	"type": "library",
+	"description": "Minified version of Nette Framework.",
+	"homepage": "http://nette.org",
+	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"authors": [
+		{
+			"name": "David Grudl",
+			"homepage": "http://davidgrudl.com"
+		},
+		{
+			"name": "Nette Community",
+			"homepage": "http://nette.org/contributors"
+		}
+	],
+	"require": {
+		"php": ">=7.1",
+		"ext-pdo": "*",
+		"ext-json": "*",
+		"ext-iconv": "*",
+		"ext-session": "*",
+		"ext-tokenizer": "*"
+	},
+	"suggest": {
+		"ext-fileinfo": "to detect type of files",
+		"ext-gd": "to use Nette\\Utils\\Image",
+		"ext-iconv": "to use Nette\\Utils\\Strings::webalize() and toAscii()",
+		"ext-intl": "for script transliteration in Strings::webalize() and toAscii()",
+		"ext-json": "to use Nette\\Utils\\Json",
+		"ext-mbstring": "to use Nette\\Utils\\Strings::lower(), latte filters lower, upper, capitalize, etc...",
+		"ext-pdo_sqlite": "to use SQLiteStorage or SQLiteJournal",
+		"ext-xml": "to use Nette\\Utils\\Strings::length() etc. when mbstring is not available"
+	},
+	"replace": {
+		"nette/nette": "3.0.*"
+	},
+	"autoload": {
+		"files": ["nette.phar"]
+	}
+}
